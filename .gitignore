@@ -1,0 +1,10 @@
+*.o
+*~
+*.swp
+*.swo
+*.txt
+*.d
+*.d.*
+.*.*.swp
+.*.*.swo
+uavitl

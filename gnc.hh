@@ -12,6 +12,7 @@ class GNC{
         Control _c;
 
     public:
+        GNC() = default;
         GNC(Guidance, Navigation, Control);
         ~GNC();
 
