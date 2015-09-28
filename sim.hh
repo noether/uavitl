@@ -23,6 +23,7 @@ class Sim
         ~Sim();
 
         int readDatagram();
+        void connect();
 };
 
 #endif

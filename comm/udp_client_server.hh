@@ -41,6 +41,8 @@ class udp_client
         int                 get_port() const;
         std::string         get_addr() const;
 
+        void                connect();
+        void                disconnect();
         int                 send(const char *msg, size_t size);
 
     private:
@@ -48,6 +50,7 @@ class udp_client
         int                 f_port;
         std::string         f_addr;
         struct addrinfo *   f_addrinfo;
+        int                 connected;
 };
 
 
@@ -62,6 +65,8 @@ class udp_server
         int                 get_port() const;
         std::string         get_addr() const;
 
+        void                connect();
+        void                disconnect();
         int                 recv(char *msg, size_t max_size);
         int                 timed_recv(char *msg, size_t max_size, int max_wait_ms);
 
@@ -70,6 +75,7 @@ class udp_server
         int                 f_port;
         std::string         f_addr;
         struct addrinfo *   f_addrinfo;
+        int                 connected;
 };
 
 #endif

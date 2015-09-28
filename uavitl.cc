@@ -13,8 +13,8 @@ int main(int argc, char* argv[])
     }
 
     std::string ip("127.0.0.1");
-    int udp_xplane_in = 50000;
-    int udp_xplane_out = 55001;
+    int udp_xplane_in = 40000;
+    int udp_xplane_out = 49003;
 
     Sim xp(ip, udp_xplane_in, udp_xplane_out, XPLANE);
 
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 
     GNC gnc(g, n, c);
 
-    Flyingmachine plane(xp, gnc);
+    Flyingmachine plane(&xp, gnc);
 
     for(;;){
         plane.readFromSim();
