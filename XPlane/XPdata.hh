@@ -1,54 +1,30 @@
-/*
- *  XPlaneData.h
- *  MisSockets
- *
- *  Created by Javier on 21/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
- // Clase base para los datos de un datagrama X-Plane:
-#ifndef XPLANEDATA_H
-#define XPLANEDATA_H
+#ifndef XPLANEDATA_HH
+#define XPLANEDATA_HH 1
 
 #include <tr1/memory>
 #include <iostream>
 #include <vector>
+#include <string.h>
 
-// Plantilla para copiar un tipo de variable en un buffer de caracteres:
 template <typename T> void insert_in_dtg(std::vector<char>::iterator & i, T t) {
-	std::memcpy(&*i, &t, sizeof(t));
-	i += sizeof(t);
+    memcpy(&*i, &t, sizeof(t));
+    i += sizeof(t);
 };
 
-class XPlanePlane;
+class XPdata{
+    public:
+        XPdata();
+        ~XPdata();
 
-class XPlaneData {
+        virtual std::ostream& oo(std::ostream &f) const=0;
+        friend std::ostream& operator<<(std::ostream &o, const XPdata &d);
 
-public:
-	
-	
-	XPlaneData();
-	~XPlaneData();
+        static XPdata* create(std::vector<char>::iterator& i);
+        static void prologue_to_dtg(std::vector<char> &dtg);
 
-	virtual std::ostream& oo(std::ostream &f) const=0; // Nos asegura el utilizar el "ostream" correcto según la clase derivada.
-		
-	friend std::ostream& operator<<(std::ostream &o, const XPlaneData &d);	
-	
-	
-	static XPlaneData* create(std::vector<char>::iterator& i);
-	
-	// Crear la cabecera del datagrama a enviar:
-	static void prologue_to_Dtg(std::vector<char> &dtg);
-
-	virtual void to_Dtg(std::vector<char> &dtg) const=0;
-	
-	virtual void accept(XPlanePlane *p) const=0;
-
-
-
+        virtual void to_dtg(std::vector<char> &dtg) const=0;
 };
 
-typedef std::vector<std::tr1::shared_ptr<XPlaneData> > XPlaneDataVector;
+typedef std::vector<std::tr1::shared_ptr<XPdata> > XPdataVector;
 
-#endif // XPLANEDATA_H
+#endif

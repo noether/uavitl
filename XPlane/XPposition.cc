@@ -1,128 +1,93 @@
-/*
- *  XPlaneLat.cpp
- *  MisSockets
- *
- *  Created by Javier on 26/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
-#include "XPlanePosition.h"
 #include <vector>
 #include <ostream>
-#include "XplanePlane.h"
 
+#include "XPposition.hh"
 
-
-XPlanePosition::XPlanePosition():
-	latitude(-999),
-	longitude(-999),
-	fmsl(-999),
-	fagl(-999),
-	altitudeIndic(-999),
-	latSouth(-999),
-	longWest(-999)
+XPposition::XPposition():
+    _latitude(-999),
+    _longitude(-999),
+    _fmsl(-999),
+    _fagl(-999),
+    _altitudeIndic(-999),
+    _latSouth(-999),
+    _longWest(-999)
 {
 }
 
+XPposition::XPposition(std::vector<char>::iterator & i){
+    _latitude = *reinterpret_cast<float*>(&*(i));
+    _longitude = *reinterpret_cast<float*>(&*(i+=4));
+    _fmsl = *reinterpret_cast<float*>(&*(i+=4)); 
+    _fagl = *reinterpret_cast<float*> (&*(i+=4));
+    _onrw = *reinterpret_cast<float*> (&*(i+=4));
+    _altitudeIndic = *reinterpret_cast<float*> (&*(i+=4));
+    _latSouth = *reinterpret_cast<float*> (&*(i+=4));
+    _longWest = *reinterpret_cast<float*> (&*(i+=4));
 
-XPlanePosition::XPlanePosition(std::vector<char>::iterator & i) {   
-	
-	/*	
-		i está apuntando al primer miembro correspondiente a los datos de indice 20:
-	 */ 
-	
-	latitude= *reinterpret_cast<float*>(&*(i));
-	longitude= *reinterpret_cast<float*>(&*(i+4));
-	fmsl= *reinterpret_cast<float*>(&*(i+8)); 
-	fagl= *reinterpret_cast<float*> (&*(i+12));
-	// Desconocido= *reinterpret_cast<float*> (&*(i+16));
-	altitudeIndic= *reinterpret_cast<float*> (&*(i+20));
-	latSouth= *reinterpret_cast<float*> (&*(i+24));
-	longWest= *reinterpret_cast<float*> (&*(i+28));
-
-	// TODO: hay que ver que hay en el paquete, porque no cuadra
-	
-	i += 32;
+    i += 4;
 }
 
-XPlanePosition::~XPlanePosition() {
-	
+XPposition::~XPposition(){
 }
 
 
-float XPlanePosition::getLatitude() {
-	return latitude;
+float XPposition::get_latitude(){
+    return _latitude;
+}
+
+float XPposition::get_longitude(){
+    return _longitude;
 }
 
 
-float XPlanePosition::getLongitude() {
-	return longitude;
+float XPposition::get_altitudeFmsl(){
+    return _fmsl;
 }
 
 
-float XPlanePosition::getAltitudeFmsl() {
-	return fmsl;
+float XPposition::get_altitudeFagl(){
+    return _fagl;
 }
 
-
-float XPlanePosition::getAltitudeFagl() {
-	return fagl;
+float XPposition::get_onrw(){
+    return _onrw;
 }
 
-float XPlanePosition::getAltitudeIndic() {
-	return altitudeIndic;
+float XPposition::get_altitudeIndic(){
+    return _altitudeIndic;
 }
 
-float XPlanePosition::getLatitudeS() {
-	return latSouth;
+float XPposition::get_latitudeS(){
+    return _latSouth;
 }
 
-float XPlanePosition::getLongitudeW() {
-	return longWest;
+float XPposition::get_longitudeW(){
+    return _longWest;
 }
 
-
-
-
-
-std::ostream& XPlanePosition::oo (std::ostream& o)  const {
-	return o	<< "Latitude: " << this->latitude << " degrees" << std::endl
-				<< "Longitude: " << this->longitude << " degrees" << std::endl 
-				<< "Altitude: " << this->fmsl << " fmsl" << std::endl
-				<< "Altitude: " << this->fagl << " fagl" << std::endl
-				<< "Altitude indicated: " << this->altitudeIndic << std::endl
-				<< "Latitude South: " << this->latSouth << std::endl
-				<< "Longitude West: " << this->longWest << std::endl;
+std::ostream& XPposition::oo (std::ostream& o)  const{
+    return o << "Latitude: " << this->_latitude << " degrees" << std::endl
+        << "Longitude: " << this->_longitude << " degrees" << std::endl 
+        << "Altitude: " << this->_fmsl << " fmsl" << std::endl
+        << "Altitude: " << this->_fagl << " fagl" << std::endl
+        << "Altitude indicated: " << this->_altitudeIndic << std::endl
+        << "Latitude South: " << this->_latSouth << std::endl
+        << "Longitude West: " << this->_longWest << std::endl;
 }
 
-void XPlanePosition::to_Dtg(std::vector<char> &dtg) const {
-	
-	
-	
-	// Vemos la longitud de nuestro dtg a enviar y aumentamos el tamaño para
-	// introducir la nueva información:
-	int long_dtg= dtg.size();
-	
-	dtg.resize(long_dtg+36);
-	
-	std::vector<char>::iterator i(dtg.begin()+long_dtg);
-	
-	int _index= 20;
-	insert_in_dtg(i, _index);
-	insert_in_dtg(i, latitude);
-	insert_in_dtg(i, longitude);
-	insert_in_dtg(i, fmsl);
-	insert_in_dtg(i, fagl);
-	insert_in_dtg(i, altitudeIndic);
-	insert_in_dtg(i, latSouth);
-	insert_in_dtg(i, longWest);
-	
-	
+void XPposition::to_dtg(std::vector<char> &dtg) const{
+    int long_dtg= dtg.size();
+    int index= 20;
+
+    dtg.resize(long_dtg+36);
+    std::vector<char>::iterator i(dtg.begin()+long_dtg);
+
+    insert_in_dtg(i, index);
+    insert_in_dtg(i, _latitude);
+    insert_in_dtg(i, _longitude);
+    insert_in_dtg(i, _fmsl);
+    insert_in_dtg(i, _fagl);
+    insert_in_dtg(i, _altitudeIndic);
+    insert_in_dtg(i, _latSouth);
+    insert_in_dtg(i, _longWest);
 }
-
-void XPlanePosition::accept(XPlanePlane *p) const {
-	p->visit(*this);
-}
-
-

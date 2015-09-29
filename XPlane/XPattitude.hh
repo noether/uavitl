@@ -1,67 +1,36 @@
-/*
- *  XPlanePitch.h
- *  MisSockets
- *
- *  Created by Javier on 27/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+#ifndef XPATTIUDE_HH
+#define XPATTIUDE_HH 1
 
-#ifndef XPLANEATTIUDE_H
-#define XPLANEATTIUDE_H
-
-#include "XPlaneData.h"
 #include <vector>
 #include <iostream>
 #include <string>
 
+#include "XPdata.hh"
 
-class XPlaneAttitude: public XPlaneData {
-public:
-	// =================
-	// = Constructores =
-	// =================
-	XPlaneAttitude();
-	XPlaneAttitude (std::vector<char>::iterator &i) ;
-	~XPlaneAttitude();
-	
-	
-	// ===========
-	// = Métodos =
-	// ===========
-	float getPitch();		
-	float getRoll();	
-	float getTrueHeading();
-	float getMagneticHeading();
-	float getMagVar();
-	float getHeadingBug();
-	
-	float putPitch();		
-	float putRoll();	
-	float putTrueHeading();
-	float putMagneticHeading();
-	float putMagVar();
-	float putHeadingBug();
-	
-	
-	
-	virtual std::ostream& oo(std::ostream& o) const; // Redefinimos XPlaneData::oo
-	virtual void to_Dtg(std::vector<char> &dtg) const;
-	virtual void accept(XPlanePlane *p) const;
+class XPattitude: public XPdata{
+    private:
+        float _pitch;
+        float _roll;
+        float _yaw;
+        float _magneticHeading;
+        float _magVar;
+        float _headingBug;
 
-private:
-	
-	
-	// =============
-	// = Atributos =
-	// =============
-	float pitch;
-	float roll;
-	float trueHeading;
-	float magneticHeading;
-	float magVar;
-	float headingBug;
-	
+
+    public:
+        XPattitude();
+        XPattitude(std::vector<char>::iterator &i);
+        ~XPattitude();
+
+        float get_pitch();
+        float get_roll();
+        float get_yaw();
+        float get_magneticHeading();
+        float get_magVar();
+        float get_headingBug();
+
+        virtual std::ostream& oo(std::ostream& o) const;
+        virtual void to_dtg(std::vector<char> &dtg) const;
 };
 
 #endif

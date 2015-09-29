@@ -1,69 +1,39 @@
-/*
- *  XPlaneLat.h
- *  MisSockets
- *
- *  Created by Javier on 26/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
+#ifndef XPPOSITION_HH
+#define XPPOSITION_HH 1
 
-
-#ifndef XPLANEPOSITION_H
-#define XPLANEPOSITION_H
-
-#include "XPlaneData.h"
 #include <vector>
 #include <iostream>
 #include <string>
 
+#include "XPdata.hh"
 
+class XPposition: public XPdata{
+    private:
+        float _latitude;
+        float _longitude;
+        float _fmsl;
+        float _fagl;
+        float _onrw;
+        float _altitudeIndic;
+        float _latSouth;
+        float _longWest;
 
+    public:
+        XPposition();
+        XPposition (std::vector<char>::iterator &i) ;
+        ~XPposition();
 
+        float get_latitude();
+        float get_longitude();
+        float get_altitudeFmsl();
+        float get_altitudeFagl();
+        float get_onrw();
+        float get_altitudeIndic();
+        float get_latitudeS();
+        float get_longitudeW();
 
-class XPlanePosition: public XPlaneData {
-public:
-	// =================
-	// = Constructores =
-	// =================
-	XPlanePosition();
-	XPlanePosition (std::vector<char>::iterator &i) ;
-	~XPlanePosition ();
-	
-	
-	// ===========
-	// = Métodos =
-	// ===========
-	float getLatitude();		// [degrees]
-	float getLongitude();		// [degrees]
-	float getAltitudeFmsl();	// [fmsl]	
-	float getAltitudeFagl();	// [fagl]
-	float getAltitudeIndic();	// [???]
-	float getLatitudeS();
-	float getLongitudeW();
-	
-	virtual std::ostream& oo(std::ostream& o) const; // Redefinimos XPlaneData::oo
-	virtual void to_Dtg(std::vector<char> &dtg) const;
-	virtual void accept(XPlanePlane *p) const;
-
-	
-private:
-	
-	
-	// =============
-	// = Atributos =
-	// =============
-	float latitude;
-	float longitude;
-	float fmsl;
-	float fagl;
-	float altitudeIndic;
-	float latSouth;
-	float longWest;
-	
+        virtual std::ostream& oo(std::ostream& o) const;
+        virtual void to_dtg(std::vector<char> &dtg) const;
 };
 
-
-
-
-
-#endif // XPLANEPOSITION_H
+#endif

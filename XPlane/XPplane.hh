@@ -1,14 +1,5 @@
-/*
- *  XPlanePlane.h
- *  MisSockets
- *
- *  Created by Javier on 30/11/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
-#ifndef XPLANEPLANE_H
-#define XPLANEPLANE_H
+#ifndef XPLANEPLANE_HH
+#define XPLANEPLANE_HH 1
 
 #include <vector>
 

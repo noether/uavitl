@@ -18,12 +18,14 @@ class Sim
         udp_server _server;
         udp_client _client;
 
+        int _readDatagram();
+
     public:
         Sim(std::string, int, int, Simulator);
         ~Sim();
 
-        int readDatagram();
         void connect();
+        void readFromSim();
 };
 
 #endif

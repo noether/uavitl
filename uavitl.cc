@@ -5,7 +5,6 @@
 
 int main(int argc, char* argv[])
 {
-
     std::string cfg;
 
     if(argc == 1){
@@ -22,12 +21,12 @@ int main(int argc, char* argv[])
     Navigation n;
     Control c;
 
-    GNC gnc(g, n, c);
+    GNC gnc(&g, &n, &c);
 
-    Flyingmachine plane(&xp, gnc);
+    Flyingmachine plane(&xp, &gnc);
 
     for(;;){
-        plane.readFromSim();
+        plane.update(0);
     }
 
     return 0;

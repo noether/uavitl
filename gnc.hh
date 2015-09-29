@@ -7,18 +7,18 @@
 
 class GNC{
     private:
-        Guidance _g;
-        Navigation _n;
-        Control _c;
+        Guidance *_g;
+        Navigation *_n;
+        Control *_c;
 
     public:
-        GNC() = default;
-        GNC(Guidance, Navigation, Control);
+        GNC(Guidance*, Navigation*, Control*);
+        GNC();
         ~GNC();
 
-        void set_guidance(Guidance);
-        void set_navigation(Navigation);
-        void set_control(Control);
+        void set_guidance(Guidance*);
+        void set_navigation(Navigation*);
+        void set_control(Control*);
 };
 
 #endif

@@ -19,7 +19,6 @@
 #include "udp_client_server.hh"
 #include <string.h>
 #include <unistd.h>
-#include <iostream>
 
 
 // ========================= CLIENT =========================

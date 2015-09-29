@@ -2,7 +2,7 @@
 #include "flyingmachine.hh"
 #include "gnc.hh"
 
-Flyingmachine::Flyingmachine(Sim *sim, GNC gnc):
+Flyingmachine::Flyingmachine(Sim *sim, GNC *gnc):
     _sim(sim),
     _gnc(gnc)
 {
@@ -13,8 +13,8 @@ Flyingmachine::~Flyingmachine()
 {
 }
 
-int Flyingmachine::readFromSim()
+int Flyingmachine::update(int t)
 {
-    _sim->readDatagram();
+    _sim->readFromSim();
     return 0;
 }

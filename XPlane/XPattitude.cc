@@ -1,123 +1,87 @@
-/*
- *  XPlanePitch.cpp
- *  MisSockets
- *
- *  Created by Javier on 27/10/09.
- *  Copyright 2009 __MyCompanyName__. All rights reserved.
- *
- */
-
-#include "XPlaneAttitude.h"
 #include <vector>
 #include <ostream>
-#include "XPlanePlane.h"
 
+#include "XPattitude.hh"
 
-
-
-XPlaneAttitude::XPlaneAttitude():
-	pitch(-999),
-	roll(-999),
-	trueHeading(-999),
-	magneticHeading(-999),
-	magVar(-999),
-	headingBug(-999)
+XPattitude::XPattitude():
+    _pitch(-999),
+    _roll(-999),
+    _yaw(-999),
+    _magneticHeading(-999),
+    _magVar(-999),
+    _headingBug(-999)
 {
 }
 
+XPattitude::XPattitude(std::vector<char>::iterator & i){
+    float unknown;
 
+    _pitch= *reinterpret_cast<float*>(&*(i));
+    _roll= *reinterpret_cast<float*>(&*(i+4));
+    _yaw = *reinterpret_cast<float*>(&*(i+8)); 
+    _magneticHeading = *reinterpret_cast<float*> (&*(i+12));
+    _magVar = *reinterpret_cast<float*> (&*(i+16));
+    _headingBug = *reinterpret_cast<float*> (&*(i+20));
+    unknown = *reinterpret_cast<float*> (&*(i+24));
+    unknown = *reinterpret_cast<float*> (&*(i+28));
+    i += 4;
 
-XPlaneAttitude::XPlaneAttitude(std::vector<char>::iterator & i) {   
-	
-	/*	
-	 i está apuntando al primer miembro correspondiente a los datos de indice 20:
-	 */ 
-	
-	pitch= *reinterpret_cast<float*>(&*(i));
-	roll= *reinterpret_cast<float*>(&*(i+4));
-	trueHeading= *reinterpret_cast<float*>(&*(i+8)); 
-	magneticHeading= *reinterpret_cast<float*> (&*(i+12));
-	magVar= *reinterpret_cast<float*> (&*(i+16));
-	headingBug= *reinterpret_cast<float*> (&*(i+20));
-	//desconocido= *reinterpret_cast<float*> (&*(i+24));
-	//desconocido= *reinterpret_cast<float*> (&*(i+28));
-		
-	i += 32;
+    unknown = unknown; // Keep compiler quiet
+}
+
+XPattitude::~XPattitude(){
 }
 
 
-
-
-
-
-XPlaneAttitude::~XPlaneAttitude() {
-	
+float XPattitude::get_pitch(){
+    return _pitch;
 }
 
 
-float XPlaneAttitude::getPitch() {
-	return pitch;
+float XPattitude::get_roll(){
+    return _roll;
 }
 
 
-float XPlaneAttitude::getRoll() {
-	return roll;
+float XPattitude::get_yaw(){
+    return _yaw;
 }
 
 
-float XPlaneAttitude::getTrueHeading() {
-	return trueHeading;
+float XPattitude::get_magneticHeading(){
+    return _magneticHeading;
 }
 
-
-float XPlaneAttitude::getMagneticHeading() {
-	return magneticHeading;
+float XPattitude::get_magVar(){
+    return _magVar;
 }
 
-float XPlaneAttitude::getMagVar() {
-	return magVar;
+float XPattitude::get_headingBug(){
+    return _headingBug;
 }
 
-float XPlaneAttitude::getHeadingBug() {
-	return headingBug;
+std::ostream& XPattitude::oo (std::ostream& o)  const{
+    return o << "Pitch: " << this->_pitch << " degrees" << std::endl
+        << "Roll: " << this->_roll << " degrees" << std::endl
+        << "Yaw: " << this->_yaw << " degrees" << std::endl
+        << "Magnetic Heading: " << this->_magneticHeading << " degrees"
+        << std::endl
+        << "Mag Var: " << this->_magVar << " degrees" << std::endl
+        << "Heading bug: " << this->_headingBug << " degrees" << std::endl;
 }
 
-std::ostream& XPlaneAttitude::oo (std::ostream& o)  const {
-	return o	<< "Pitch: " << this->pitch << " degrees" << std::endl
-	<< "Roll: " << this->roll << " degrees" << std::endl 
-	<< "True Heading: " << this->trueHeading << " degrees" << std::endl
-	<< "Magnetic Heading: " << this->magneticHeading << " degrees" << std::endl
-	<< "Mag Var: " << this->magVar << " degrees" << std::endl
-	<< "Heading bug: " << this->headingBug << " degrees" << std::endl;
+void XPattitude::to_dtg(std::vector<char> &dtg) const{
+    int long_dtg= dtg.size();
+    int index= 18;
+
+    dtg.resize(long_dtg+36);
+    std::vector<char>::iterator i(dtg.begin()+long_dtg);
+
+    insert_in_dtg(i, index);
+    insert_in_dtg(i, _pitch);
+    insert_in_dtg(i, _roll);
+    insert_in_dtg(i, _yaw);
+    insert_in_dtg(i, _magneticHeading);
+    insert_in_dtg(i, _magVar);
+    insert_in_dtg(i, _headingBug);
 }
-
-void XPlaneAttitude::to_Dtg(std::vector<char> &dtg) const {
-	
-	
-	
-	// Vemos la longitud de nuestro dtg a enviar y aumentamos el tamaño para
-	// introducir la nueva información:
-	int long_dtg= dtg.size();
-	
-	dtg.resize(long_dtg+36);
-	
-	std::vector<char>::iterator i(dtg.begin()+long_dtg);
-	// std::vector<char>::iterator i_end(inf.end());
-	
-	int _index= 18;
-	insert_in_dtg(i, _index);
-	insert_in_dtg(i, pitch);
-	insert_in_dtg(i, roll);
-	insert_in_dtg(i, trueHeading);
-	insert_in_dtg(i, magneticHeading);
-	insert_in_dtg(i, magVar);
-	insert_in_dtg(i, headingBug);
-	
-	
-}
-void XPlaneAttitude::accept(XPlanePlane *p) const {
-	p->visit(*this);
-}
-
-
-
