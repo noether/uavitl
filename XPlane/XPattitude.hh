@@ -14,8 +14,6 @@ class XPattitude: public XPdata{
         float _yaw;
         float _magneticHeading;
         float _magVar;
-        float _headingBug;
-
 
     public:
         XPattitude();
@@ -27,7 +25,6 @@ class XPattitude: public XPdata{
         float get_yaw();
         float get_magneticHeading();
         float get_magVar();
-        float get_headingBug();
 
         virtual std::ostream& oo(std::ostream& o) const;
         virtual void to_dtg(std::vector<char> &dtg) const;

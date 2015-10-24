@@ -12,8 +12,8 @@ int main(int argc, char* argv[])
     }
 
     std::string ip("127.0.0.1");
-    int udp_xplane_in = 40000;
-    int udp_xplane_out = 49003;
+    int udp_xplane_in = 50000;
+    int udp_xplane_out = 60001;
 
     Sim xp(ip, udp_xplane_in, udp_xplane_out, XPLANE);
 

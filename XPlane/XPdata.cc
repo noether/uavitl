@@ -1,6 +1,8 @@
 #include "XPdata.hh"
 #include "XPattitude.hh"
-#include "XPposition.hh"
+#include "XPgps.hh"
+
+#include <iostream>
 
 XPdata::XPdata(){
 }
@@ -15,13 +17,15 @@ std::ostream& operator<<(std::ostream &o, const XPdata &d) {
 XPdata* XPdata::create(std::vector<char>::iterator &i) {
     switch (*i) {
         case 18:
+            std::cout << "Attitude recieved!" << std::endl;
             i+=4; // ID is codified with 4 bytes
             return new XPattitude(i); // Data Payload
             break;
 
         case 20:
+            std::cout << "GPS recieved!" << std::endl;
             i+=4;
-            return new XPposition(i);
+            return new XPgps(i);
             break;
 
         default:

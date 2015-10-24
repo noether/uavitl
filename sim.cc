@@ -3,9 +3,7 @@
 
 #include "sim.hh"
 #include "./comm/udp_client_server.hh"
-
-#include "./XPlane/XPattitude.hh"
-#include "./XPlane/XPposition.hh"
+#include "./XPlane/XPdata.hh"
 
 Sim::Sim(std::string ip, int udp_port_in,
         int udp_port_out, Simulator simulator):
@@ -28,7 +26,7 @@ void Sim::connect(){
 int Sim::_readDatagram(){
     int readBytes = 0;
 
-    _datagram.resize(500, 0);
+    _datagram.resize(1000, 0);
     // TODO check for timeouts
     readBytes = _server.recv(&*_datagram.begin(), _datagram.size());
     if (readBytes < 0)
@@ -53,7 +51,6 @@ void Sim::readFromSim(){
     for(int iii = 0; iii < 4; ++iii)
         if (*(i+iii) != data[iii])
             isData = 0; // TODO check for nonData pkg
-
 
     if(isData){
         std::tr1::shared_ptr<XPdata> _xpd;
