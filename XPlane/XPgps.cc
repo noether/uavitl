@@ -1,9 +1,9 @@
 #include <vector>
 #include <ostream>
 
-#include "XPposition.hh"
+#include "XPgps.hh"
 
-XPposition::XPposition():
+XPgps::XPgps():
     _latitude(-999),
     _longitude(-999),
     _fmsl(-999),
@@ -14,7 +14,7 @@ XPposition::XPposition():
 {
 }
 
-XPposition::XPposition(std::vector<char>::iterator & i){
+XPgps::XPgps(std::vector<char>::iterator & i){
     _latitude = *reinterpret_cast<float*>(&*(i));
     _longitude = *reinterpret_cast<float*>(&*(i+=4));
     _fmsl = *reinterpret_cast<float*>(&*(i+=4)); 
@@ -27,45 +27,45 @@ XPposition::XPposition(std::vector<char>::iterator & i){
     i += 4;
 }
 
-XPposition::~XPposition(){
+XPgps::~XPgps(){
 }
 
 
-float XPposition::get_latitude(){
+float XPgps::get_latitude(){
     return _latitude;
 }
 
-float XPposition::get_longitude(){
+float XPgps::get_longitude(){
     return _longitude;
 }
 
 
-float XPposition::get_altitudeFmsl(){
+float XPgps::get_altitudeFmsl(){
     return _fmsl;
 }
 
 
-float XPposition::get_altitudeFagl(){
+float XPgps::get_altitudeFagl(){
     return _fagl;
 }
 
-float XPposition::get_onrw(){
+float XPgps::get_onrw(){
     return _onrw;
 }
 
-float XPposition::get_altitudeIndic(){
+float XPgps::get_altitudeIndic(){
     return _altitudeIndic;
 }
 
-float XPposition::get_latitudeS(){
+float XPgps::get_latitudeS(){
     return _latSouth;
 }
 
-float XPposition::get_longitudeW(){
+float XPgps::get_longitudeW(){
     return _longWest;
 }
 
-std::ostream& XPposition::oo (std::ostream& o)  const{
+std::ostream& XPgps::oo (std::ostream& o)  const{
     return o << "Latitude: " << this->_latitude << " degrees" << std::endl
         << "Longitude: " << this->_longitude << " degrees" << std::endl 
         << "Altitude: " << this->_fmsl << " fmsl" << std::endl
@@ -75,7 +75,7 @@ std::ostream& XPposition::oo (std::ostream& o)  const{
         << "Longitude West: " << this->_longWest << std::endl;
 }
 
-void XPposition::to_dtg(std::vector<char> &dtg) const{
+void XPgps::to_dtg(std::vector<char> &dtg) const{
     int long_dtg= dtg.size();
     int index= 20;
 

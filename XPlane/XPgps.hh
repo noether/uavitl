@@ -7,7 +7,7 @@
 
 #include "XPdata.hh"
 
-class XPposition: public XPdata{
+class XPgps: public XPdata{
     private:
         float _latitude;
         float _longitude;
@@ -19,9 +19,9 @@ class XPposition: public XPdata{
         float _longWest;
 
     public:
-        XPposition();
-        XPposition (std::vector<char>::iterator &i) ;
-        ~XPposition();
+        XPgps();
+        XPgps (std::vector<char>::iterator &i) ;
+        ~XPgps();
 
         float get_latitude();
         float get_longitude();
