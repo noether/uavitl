@@ -6,6 +6,18 @@
 #include <vector>
 #include <string.h>
 
+enum XP_ID{
+  XPID_SPEEDS = 3,
+  XPID_LOADS = 4,
+  XPID_ATM_PLANE = 6,
+  XPID_PQR = 17,
+  XPID_ATTITUDE = 18,
+  XPID_AER_ANGLES = 19,
+  XPID_GPS = 20,
+  XPID_XYZ = 21
+};
+
+
 template <typename T> void insert_in_dtg(std::vector<char>::iterator & i, T t) {
     memcpy(&*i, &t, sizeof(t));
     i += sizeof(t);

@@ -1,6 +1,7 @@
 #include <vector>
 #include <ostream>
 
+#include "XPdata.hh"
 #include "XPattitude.hh"
 
 XPattitude::XPattitude():
@@ -50,7 +51,7 @@ float XPattitude::get_magVar(){
 
 void XPattitude::to_dtg(std::vector<char> &dtg) const{
     int long_dtg = dtg.size();
-    int index = 18;
+    int index = XPID_ATTITUDE;
 
     dtg.resize(long_dtg + 36);
     std::vector<char>::iterator i(dtg.begin() + long_dtg);
@@ -60,5 +61,8 @@ void XPattitude::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _roll);
     insert_in_dtg(i, _yaw);
     insert_in_dtg(i, _magneticHeading);
+    insert_in_dtg(i, -999);
+    insert_in_dtg(i, -999);
+    insert_in_dtg(i, -999);
     insert_in_dtg(i, _magVar);
 }

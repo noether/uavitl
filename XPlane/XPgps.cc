@@ -1,6 +1,7 @@
 #include <vector>
 #include <ostream>
 
+#include "XPdata.hh"
 #include "XPgps.hh"
 
 XPgps::XPgps():
@@ -66,8 +67,8 @@ float XPgps::get_longitudeW(){
 }
 
 void XPgps::to_dtg(std::vector<char> &dtg) const{
-    int long_dtg= dtg.size();
-    int index= 20;
+    int long_dtg = dtg.size();
+    int index = XPID_GPS;
 
     dtg.resize(long_dtg + 36);
     std::vector<char>::iterator i(dtg.begin()+long_dtg);

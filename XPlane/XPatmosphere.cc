@@ -1,6 +1,7 @@
 #include <vector>
 #include <ostream>
 
+#include "XPdata.hh"
 #include "XPatmosphere.hh"
 
 XPatmosphere::XPatmosphere():
@@ -60,7 +61,7 @@ float XPatmosphere::get_g(){
 
 void XPatmosphere::to_dtg(std::vector<char> &dtg) const{
     int long_dtg = dtg.size();
-    int index = 6;
+    int index = XPID_ATM_PLANE;
 
     dtg.resize(long_dtg + 36);
     std::vector<char>::iterator i(dtg.begin() + long_dtg);
