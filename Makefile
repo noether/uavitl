@@ -11,6 +11,12 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(XPLANE_PATH)XPattitude.o \
 				 $(XPLANE_PATH)XPpqr.o \
 				 $(XPLANE_PATH)XPspeeds.o \
+				 $(XPLANE_PATH)XPloads.o \
+				 $(XPLANE_PATH)XPxyz.o \
+				 $(XPLANE_PATH)XPthrottelc.o \
+				 $(XPLANE_PATH)XPthrottela.o \
+				 $(XPLANE_PATH)XPgearbrakes.o \
+				 $(XPLANE_PATH)XPyoke.o \
 				 $(XPLANE_PATH)XPaerangles.o \
 				 $(XPLANE_PATH)XPatmosphere.o \
 				 sim.o \

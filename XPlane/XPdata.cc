@@ -5,6 +5,12 @@
 #include "XPaerangles.hh"
 #include "XPpqr.hh"
 #include "XPspeeds.hh"
+#include "XPloads.hh"
+#include "XPxyz.hh"
+#include "XPthrottelc.hh"
+#include "XPthrottela.hh"
+#include "XPgearbrakes.hh"
+#include "XPyoke.hh"
 
 #include <iostream>
 
@@ -19,6 +25,10 @@ XPdata* XPdata::create(std::vector<char>::iterator &i) {
         case XPID_SPEEDS:
             i+=4;
             return new XPspeeds(i);
+
+        case XPID_LOADS:
+            i+=4;
+            return new XPloads(i);
 
         case XPID_ATM_PLANE:
             i+=4;
@@ -35,17 +45,34 @@ XPdata* XPdata::create(std::vector<char>::iterator &i) {
         case XPID_ATTITUDE:
             i+=4;
             return new XPattitude(i);
-            break;
 
         case XPID_GPS:
             i+=4;
             return new XPgps(i);
-            break;
+
+        case XPID_XYZ:
+            i+=4;
+            return new XPxyz(i);
+
+        case XPID_THROTTEL_C:
+            i+=4;
+            return new XPthrottelc(i);
+
+        case XPID_THROTTEL_A:
+            i+=4;
+            return new XPthrottela(i);
+
+        case XPID_GEAR_BRAKES:
+            i+=4;
+            return new XPgearbrakes(i);
+
+        case XPID_YOKE:
+            i+=4;
+            return new XPyoke(i);
 
         default:
             i+=36;
             return 0;
-            break;
     }
 }
 

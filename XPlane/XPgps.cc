@@ -9,6 +9,7 @@ XPgps::XPgps():
     _longitude(-999),
     _fmsl(-999),
     _fagl(-999),
+    _onrw(-999),
     _altitudeIndic(-999),
     _latSouth(-999),
     _longWest(-999)
@@ -31,7 +32,6 @@ XPgps::XPgps(std::vector<char>::iterator & i){
 XPgps::~XPgps(){
 }
 
-
 float XPgps::get_latitude(){
     return _latitude;
 }
@@ -39,7 +39,6 @@ float XPgps::get_latitude(){
 float XPgps::get_longitude(){
     return _longitude;
 }
-
 
 float XPgps::get_altitudeFmsl(){
     return _fmsl;
@@ -78,6 +77,7 @@ void XPgps::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _longitude);
     insert_in_dtg(i, _fmsl);
     insert_in_dtg(i, _fagl);
+    insert_in_dtg(i, _onrw);
     insert_in_dtg(i, _altitudeIndic);
     insert_in_dtg(i, _latSouth);
     insert_in_dtg(i, _longWest);
