@@ -1,5 +1,5 @@
-#ifndef XPATTIUDE_HH
-#define XPATTIUDE_HH 1
+#ifndef XPATTITUDE_HH
+#define XPATTITUDE_HH 1
 
 #include <vector>
 #include <iostream>
@@ -26,7 +26,6 @@ class XPattitude: public XPdata{
         float get_magneticHeading();
         float get_magVar();
 
-        virtual std::ostream& oo(std::ostream& o) const;
         virtual void to_dtg(std::vector<char> &dtg) const;
 };
 

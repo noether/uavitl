@@ -48,21 +48,12 @@ float XPattitude::get_magVar(){
     return _magVar;
 }
 
-std::ostream& XPattitude::oo (std::ostream& o)  const{
-    return o << "Pitch: " << this->_pitch << " degrees" << std::endl
-        << "Roll: " << this->_roll << " degrees" << std::endl
-        << "Yaw: " << this->_yaw << " degrees" << std::endl
-        << "Magnetic Heading: " << this->_magneticHeading << " degrees"
-        << std::endl
-        << "Mag Var: " << this->_magVar << " degrees" << std::endl;
-}
-
 void XPattitude::to_dtg(std::vector<char> &dtg) const{
-    int long_dtg= dtg.size();
-    int index= 18;
+    int long_dtg = dtg.size();
+    int index = 18;
 
-    dtg.resize(long_dtg+36);
-    std::vector<char>::iterator i(dtg.begin()+long_dtg);
+    dtg.resize(long_dtg + 36);
+    std::vector<char>::iterator i(dtg.begin() + long_dtg);
 
     insert_in_dtg(i, index);
     insert_in_dtg(i, _pitch);

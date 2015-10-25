@@ -27,7 +27,6 @@ int Sim::_readDatagram(){
     int readBytes = 0;
 
     _datagram.resize(1000, 0);
-    // TODO check for timeouts
     readBytes = _server.recv(&*_datagram.begin(), _datagram.size());
     if (readBytes < 0)
         return readBytes;
@@ -39,27 +38,29 @@ int Sim::_readDatagram(){
 }
 
 void Sim::readFromSim(){
-    XPdataVector v;
+    if(_simulator == XPLANE){
+        XPdataVector v;
 
-    _readDatagram();
-    int isData = 1;
-    const char *data= "DATA";
+        _readDatagram();
+        int isData = 1;
+        const char *data= "DATA";
 
-    std::vector<char>::iterator i(_datagram.begin());
-    std::vector<char>::iterator ii(_datagram.end());
+        std::vector<char>::iterator i(_datagram.begin());
+        std::vector<char>::iterator ii(_datagram.end());
 
-    for(int iii = 0; iii < 4; ++iii)
-        if (*(i+iii) != data[iii])
-            isData = 0; // TODO check for nonData pkg
+        for(int iii = 0; iii < 4; ++iii)
+            if (*(i+iii) != data[iii])
+                isData = 0;
 
-    if(isData){
-        std::tr1::shared_ptr<XPdata> _xpd;
-        i+=5;
+        if(isData){
+            std::tr1::shared_ptr<XPdata> _xpd;
+            i+=5;
 
-        while(i != (ii)){
-            _xpd.reset(XPdata::create(i));
-            if(_xpd)
-                v.push_back(_xpd);
+            while(i != (ii)){
+                _xpd.reset(XPdata::create(i));
+                if(_xpd)
+                    v.push_back(_xpd);
+            }
         }
     }
 }

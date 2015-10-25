@@ -1,5 +1,5 @@
-#ifndef XPPOSITION_HH
-#define XPPOSITION_HH 1
+#ifndef XPGPS_HH
+#define XPGPS_HH 1
 
 #include <vector>
 #include <iostream>
@@ -32,7 +32,6 @@ class XPgps: public XPdata{
         float get_latitudeS();
         float get_longitudeW();
 
-        virtual std::ostream& oo(std::ostream& o) const;
         virtual void to_dtg(std::vector<char> &dtg) const;
 };
 

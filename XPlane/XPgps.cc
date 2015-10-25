@@ -65,21 +65,11 @@ float XPgps::get_longitudeW(){
     return _longWest;
 }
 
-std::ostream& XPgps::oo (std::ostream& o)  const{
-    return o << "Latitude: " << this->_latitude << " degrees" << std::endl
-        << "Longitude: " << this->_longitude << " degrees" << std::endl 
-        << "Altitude: " << this->_fmsl << " fmsl" << std::endl
-        << "Altitude: " << this->_fagl << " fagl" << std::endl
-        << "Altitude indicated: " << this->_altitudeIndic << std::endl
-        << "Latitude South: " << this->_latSouth << std::endl
-        << "Longitude West: " << this->_longWest << std::endl;
-}
-
 void XPgps::to_dtg(std::vector<char> &dtg) const{
     int long_dtg= dtg.size();
     int index= 20;
 
-    dtg.resize(long_dtg+36);
+    dtg.resize(long_dtg + 36);
     std::vector<char>::iterator i(dtg.begin()+long_dtg);
 
     insert_in_dtg(i, index);

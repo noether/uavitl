@@ -16,9 +16,6 @@ class XPdata{
         XPdata();
         ~XPdata();
 
-        virtual std::ostream& oo(std::ostream &f) const=0;
-        friend std::ostream& operator<<(std::ostream &o, const XPdata &d);
-
         static XPdata* create(std::vector<char>::iterator& i);
         static void prologue_to_dtg(std::vector<char> &dtg);
 
