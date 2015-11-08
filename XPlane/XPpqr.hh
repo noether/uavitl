@@ -23,6 +23,7 @@ class XPpqr: public XPdata{
         float get_r();
 
         virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void accept(Sim *);
 };
 
 #endif

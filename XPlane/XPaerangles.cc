@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPaerangles.hh"
+#include "../sim.hh"
 
 XPaerangles::XPaerangles():
     _aoa(-999),
@@ -62,4 +63,9 @@ void XPaerangles::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, _slip);
+}
+
+void XPaerangles::accept(Sim * s)
+{
+    s->visit(this);
 }

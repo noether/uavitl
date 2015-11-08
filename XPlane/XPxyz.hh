@@ -20,7 +20,7 @@ class XPxyz: public XPdata{
 
     public:
         XPxyz();
-        XPxyz (std::vector<char>::iterator &i) ;
+        XPxyz (std::vector<char>::iterator &);
         ~XPxyz();
 
         float get_x();
@@ -32,7 +32,8 @@ class XPxyz: public XPdata{
         float get_dFt();
         float get_dNm();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

@@ -20,7 +20,7 @@ class XPthrottelc: public XPdata{
 
     public:
         XPthrottelc();
-        XPthrottelc (std::vector<char>::iterator &i) ;
+        XPthrottelc (std::vector<char>::iterator &) ;
         ~XPthrottelc();
 
         float get_t1c();
@@ -32,7 +32,8 @@ class XPthrottelc: public XPdata{
         float get_t7c();
         float get_t8c();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

@@ -16,7 +16,7 @@ class XPgearbrakes: public XPdata{
 
     public:
         XPgearbrakes();
-        XPgearbrakes (std::vector<char>::iterator &i) ;
+        XPgearbrakes (std::vector<char>::iterator &) ;
         ~XPgearbrakes();
 
         float get_gear();
@@ -24,7 +24,8 @@ class XPgearbrakes: public XPdata{
         float get_bl();
         float get_br();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

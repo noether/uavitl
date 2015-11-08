@@ -19,6 +19,8 @@ class GNC{
         void set_guidance(Guidance*);
         void set_navigation(Navigation*);
         void set_control(Control*);
+
+        Navigation * get_nav();
 };
 
 #endif

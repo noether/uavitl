@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPxyz.hh"
+#include "../sim.hh"
 
 XPxyz::XPxyz():
     _x(-999),
@@ -80,4 +81,9 @@ void XPxyz::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _vz);
     insert_in_dtg(i, _dFt);
     insert_in_dtg(i, _dNm);
+}
+
+void XPxyz::accept(Sim * s)
+{
+    s->visit(this);
 }

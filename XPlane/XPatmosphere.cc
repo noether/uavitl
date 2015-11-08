@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPatmosphere.hh"
+#include "../sim.hh"
 
 XPatmosphere::XPatmosphere():
     _AMpressure(-999),
@@ -75,4 +76,9 @@ void XPatmosphere::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _Q);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, _g);
+}
+
+void XPatmosphere::accept(Sim * s)
+{
+    s->visit(this);
 }

@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPloads.hh"
+#include "../sim.hh"
 
 XPloads::XPloads():
     _mach(-999),
@@ -64,4 +65,9 @@ void XPloads::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _gAxial);
     insert_in_dtg(i, _gSide);
     insert_in_dtg(i, -999);
+}
+
+void XPloads::accept(Sim * s)
+{
+    s->visit(this);
 }

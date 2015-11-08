@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPyoke.hh"
+#include "../sim.hh"
 
 XPyoke::XPyoke():
     _elev(-999),
@@ -53,4 +54,9 @@ void XPyoke::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
+}
+
+void XPyoke::accept(Sim * s)
+{
+    s->visit(this);
 }

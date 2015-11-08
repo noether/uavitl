@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPpqr.hh"
+#include "../sim.hh"
 
 XPpqr::XPpqr():
     _p(-999),
@@ -52,4 +53,9 @@ void XPpqr::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
+}
+
+void XPpqr::accept(Sim * s)
+{
+    s->visit(this);
 }

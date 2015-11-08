@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPgearbrakes.hh"
+#include "../sim.hh"
 
 XPgearbrakes::XPgearbrakes():
     _gear(-999),
@@ -57,4 +58,9 @@ void XPgearbrakes::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
+}
+
+void XPgearbrakes::accept(Sim * s)
+{
+    s->visit(this);
 }

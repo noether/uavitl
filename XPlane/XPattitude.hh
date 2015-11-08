@@ -17,7 +17,7 @@ class XPattitude: public XPdata{
 
     public:
         XPattitude();
-        XPattitude(std::vector<char>::iterator &i);
+        XPattitude(std::vector<char>::iterator &);
         ~XPattitude();
 
         float get_pitch();
@@ -26,7 +26,8 @@ class XPattitude: public XPdata{
         float get_magneticHeading();
         float get_magVar();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

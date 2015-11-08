@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPgps.hh"
+#include "../sim.hh"
 
 XPgps::XPgps():
     _latitude(-999),
@@ -81,4 +82,9 @@ void XPgps::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _altitudeIndic);
     insert_in_dtg(i, _latSouth);
     insert_in_dtg(i, _longWest);
+}
+
+void XPgps::accept(Sim * s)
+{
+    s->visit(this);
 }

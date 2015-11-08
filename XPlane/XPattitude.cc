@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPattitude.hh"
+#include "../sim.hh"
 
 XPattitude::XPattitude():
     _pitch(-999),
@@ -65,4 +66,9 @@ void XPattitude::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, -999);
     insert_in_dtg(i, -999);
     insert_in_dtg(i, _magVar);
+}
+
+void XPattitude::accept(Sim * s)
+{
+    s->visit(this);
 }

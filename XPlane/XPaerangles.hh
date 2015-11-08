@@ -17,7 +17,7 @@ class XPaerangles: public XPdata{
 
     public:
         XPaerangles();
-        XPaerangles(std::vector<char>::iterator &i);
+        XPaerangles(std::vector<char>::iterator &);
         ~XPaerangles();
 
         float get_aoa();
@@ -26,7 +26,8 @@ class XPaerangles: public XPdata{
         float get_vpath();
         float get_slip();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

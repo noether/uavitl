@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPthrottela.hh"
+#include "../sim.hh"
 
 XPthrottela::XPthrottela():
     _t1a(-999),
@@ -80,4 +81,9 @@ void XPthrottela::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _t6a);
     insert_in_dtg(i, _t7a);
     insert_in_dtg(i, _t8a);
+}
+
+void XPthrottela::accept(Sim * s)
+{
+    s->visit(this);
 }

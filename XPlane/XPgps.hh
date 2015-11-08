@@ -20,7 +20,7 @@ class XPgps: public XPdata{
 
     public:
         XPgps();
-        XPgps (std::vector<char>::iterator &i) ;
+        XPgps (std::vector<char>::iterator &);
         ~XPgps();
 
         float get_latitude();
@@ -32,7 +32,8 @@ class XPgps: public XPdata{
         float get_latitudeS();
         float get_longitudeW();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

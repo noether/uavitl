@@ -27,6 +27,7 @@ class XPloads: public XPdata{
         float get_gSide();
 
         virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void accept(Sim *);
 };
 
 #endif

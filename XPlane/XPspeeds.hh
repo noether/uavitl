@@ -19,7 +19,7 @@ class XPspeeds: public XPdata{
 
     public:
         XPspeeds();
-        XPspeeds (std::vector<char>::iterator &i) ;
+        XPspeeds (std::vector<char>::iterator &) ;
         ~XPspeeds();
 
         float get_vindKias();
@@ -30,7 +30,8 @@ class XPspeeds: public XPdata{
         float get_vtrueMphas();
         float get_vtrueMphgs();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

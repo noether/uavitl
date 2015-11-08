@@ -15,14 +15,15 @@ class XPyoke: public XPdata{
 
     public:
         XPyoke();
-        XPyoke (std::vector<char>::iterator &i) ;
+        XPyoke (std::vector<char>::iterator &);
         ~XPyoke();
 
         float get_elev();
         float get_ail();
         float get_rud();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

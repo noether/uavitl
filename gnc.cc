@@ -29,3 +29,8 @@ void GNC::set_control(Control *c)
 {
     _c = c;
 }
+
+Navigation * GNC::get_nav()
+{
+    return _n;
+}

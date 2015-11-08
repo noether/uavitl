@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPthrottelc.hh"
+#include "../sim.hh"
 
 XPthrottelc::XPthrottelc():
     _t1c(-999),
@@ -80,4 +81,9 @@ void XPthrottelc::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _t6c);
     insert_in_dtg(i, _t7c);
     insert_in_dtg(i, _t8c);
+}
+
+void XPthrottelc::accept(Sim * s)
+{
+    s->visit(this);
 }

@@ -19,7 +19,7 @@ class XPatmosphere: public XPdata{
 
     public:
         XPatmosphere();
-        XPatmosphere(std::vector<char>::iterator &i);
+        XPatmosphere(std::vector<char>::iterator &);
         ~XPatmosphere();
 
         float get_AMpressure();
@@ -30,7 +30,8 @@ class XPatmosphere: public XPdata{
         float get_Q();
         float get_g();
 
-        virtual void to_dtg(std::vector<char> &dtg) const;
+        virtual void to_dtg(std::vector<char> &) const;
+        virtual void accept(Sim *);
 };
 
 #endif

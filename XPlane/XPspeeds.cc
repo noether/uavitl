@@ -3,6 +3,7 @@
 
 #include "XPdata.hh"
 #include "XPspeeds.hh"
+#include "../sim.hh"
 
 XPspeeds::XPspeeds():
     _vindKias(-999),
@@ -75,4 +76,9 @@ void XPspeeds::to_dtg(std::vector<char> &dtg) const{
     insert_in_dtg(i, _vindMph);
     insert_in_dtg(i, _vtrueMphas);
     insert_in_dtg(i, _vtrueMphgs);
+}
+
+void XPspeeds::accept(Sim * s)
+{
+    s->visit(this);
 }
