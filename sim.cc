@@ -27,7 +27,7 @@ int Sim::_readDatagram(){
     int readBytes = 0;
 
     _datagram.resize(1000, 0);
-    readBytes = _server.recv(&*_datagram.begin(), _datagram.size());
+    readBytes = _server.recv(&*_datagram.begin(), _datagram.size(), 0);
     if (readBytes < 0)
         return readBytes;
     _datagram.resize(readBytes);
@@ -81,6 +81,221 @@ float Sim::get_aos()
     return _aos;
 }
 
+float Sim::get_atm_pressure()
+{
+    return _atm_pressure;
+}
+
+float Sim::get_roll()
+{
+    return _roll;
+}
+
+float Sim::get_pitch()
+{
+    return _pitch;
+}
+
+float Sim::get_yaw()
+{
+    return _yaw;
+}
+
+float Sim::get_gear()
+{
+    return _gear;
+}
+
+float Sim::get_brakew()
+{
+    return _brakew;
+}
+
+float Sim::get_brakel()
+{
+    return _brakel;
+}
+
+float Sim::get_braker()
+{
+    return _braker;
+}
+
+float Sim::get_latitude()
+{
+    return _latitude;
+}
+
+float Sim::get_longitude()
+{
+    return _longitude;
+}
+
+float Sim::get_altitude_msl()
+{
+    return _altitude_msl;
+}
+
+float Sim::get_gx()
+{
+    return _gx;
+}
+
+float Sim::get_gy()
+{
+    return _gy;
+}
+
+float Sim::get_gz()
+{
+    return _gz;
+}
+
+float Sim::get_wx()
+{
+    return _wx;
+}
+
+float Sim::get_wy()
+{
+    return _wy;
+}
+
+float Sim::get_wz()
+{
+    return _wz;
+}
+
+float Sim::get_vkias()
+{
+    return _vkias;
+}
+
+float Sim::get_t1c()
+{
+    return _t1c;
+}
+
+float Sim::get_t2c()
+{
+    return _t2c;
+}
+
+float Sim::get_t3c()
+{
+    return _t3c;
+}
+
+float Sim::get_t4c()
+{
+    return _t4c;
+}
+
+float Sim::get_t5c()
+{
+    return _t5c;
+}
+
+float Sim::get_t6c()
+{
+    return _t6c;
+}
+
+float Sim::get_t7c()
+{
+    return _t7c;
+}
+
+float Sim::get_t8c()
+{
+    return _t8c;
+}
+
+float Sim::get_t1a()
+{
+    return _t1a;
+}
+
+float Sim::get_t2a()
+{
+    return _t2a;
+}
+
+float Sim::get_t3a()
+{
+    return _t3a;
+}
+
+float Sim::get_t4a()
+{
+    return _t4a;
+}
+
+float Sim::get_t5a()
+{
+    return _t5a;
+}
+
+float Sim::get_t6a()
+{
+    return _t6a;
+}
+
+float Sim::get_t7a()
+{
+    return _t7a;
+}
+
+float Sim::get_t8a()
+{
+    return _t8a;
+}
+
+float Sim::get_x()
+{
+    return _x;
+}
+
+float Sim::get_y()
+{
+    return _y;
+}
+
+float Sim::get_z()
+{
+    return _z;
+}
+
+float Sim::get_vx()
+{
+    return _vx;
+}
+
+float Sim::get_vy()
+{
+    return _vy;
+}
+
+float Sim::get_vz()
+{
+    return _vz;
+}
+
+float Sim::get_elevc()
+{
+    return _elevc;
+}
+
+float Sim::get_ailc()
+{
+    return _ailc;
+}
+
+float Sim::get_rudc()
+{
+    return _rudc;
+}
+
 void Sim::visit(XPaerangles * xp)
 {
     _aoa = xp->get_aoa();
@@ -116,9 +331,9 @@ void Sim::visit(XPgps * xp)
 
 void Sim::visit(XPloads * xp)
 {
-    _ax = xp->get_gAxial();
-    _ay = xp->get_gSide();
-    _az = xp->get_gNormal();
+    _gx = xp->get_gAxial();
+    _gy = xp->get_gSide();
+    _gz = xp->get_gNormal();
 }
 
 void Sim::visit(XPpqr * xp)

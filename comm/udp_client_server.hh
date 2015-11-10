@@ -67,7 +67,7 @@ class udp_server
 
         void                connect();
         void                disconnect();
-        int                 recv(char *msg, size_t max_size);
+        int                 recv(char *msg, size_t max_size, char wait);
         int                 timed_recv(char *msg, size_t max_size, int max_wait_ms);
 
     private:

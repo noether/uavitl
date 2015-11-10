@@ -322,9 +322,9 @@ std::string udp_server::get_addr() const
     return f_addr;
 }
 
-/** \brief Wait on a message.
+/** \brief Wait or not for a message.
  *
- * This function waits until a message is received on this UDP server.
+ * This function waits (or not) until a message is received on this UDP server.
  * There are no means to return from this function except by receiving
  * a message. Remember that UDP does not have a connect state so whether
  * another process quits does not change the status of this UDP server
@@ -337,13 +337,17 @@ std::string udp_server::get_addr() const
  *
  * \param[in] msg  The buffer where the message is saved.
  * \param[in] max_size  The maximum size the message (i.e. size of the \p msg buffer.)
+ * \param[in] wait If we wait for incoming data or not.
  *
  * \return The number of bytes read or -1 if an error occurs.
  */
-int udp_server::recv(char *msg, size_t max_size)
+int udp_server::recv(char *msg, size_t max_size, char wait)
 {
     if(connected)
-        return ::recv(f_socket, msg, max_size, 0);
+        if(wait)
+            return ::recv(f_socket, msg, max_size, 0);
+        else
+            return ::recv(f_socket, msg, max_size, MSG_DONTWAIT);
     else
         return -2;
 }
