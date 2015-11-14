@@ -20,7 +20,7 @@ class XPthrottela: public XPdata{
 
     public:
         XPthrottela();
-        XPthrottela (std::vector<char>::iterator &) ;
+        XPthrottela (std::vector<char>::iterator &);
         ~XPthrottela();
 
         float get_t1a();

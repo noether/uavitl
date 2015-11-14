@@ -4,6 +4,7 @@
 #include "sim.hh"
 #include "./comm/udp_client_server.hh"
 #include "./XPlane/XPdata.hh"
+#include "./environment/gravity.hh"
 
 Sim::Sim(std::string ip, int udp_port_in,
         int udp_port_out, Simulator simulator):
@@ -69,6 +70,11 @@ void Sim::readFromSim(){
 Simulator Sim::get_simulator()
 {
     return _simulator;
+}
+
+void Sim::clearvout()
+{
+    vout.clear();
 }
 
 float Sim::get_aoa()
@@ -149,6 +155,21 @@ float Sim::get_gy()
 float Sim::get_gz()
 {
     return _gz;
+}
+
+float Sim::get_ax()
+{
+    return _ax;
+}
+
+float Sim::get_ay()
+{
+    return _ay;
+}
+
+float Sim::get_az()
+{
+    return _az;
 }
 
 float Sim::get_wx()
@@ -296,6 +317,31 @@ float Sim::get_rudc()
     return _rudc;
 }
 
+void Sim::set_tc(float t1, float t2, float t3, float t4,
+        float t5, float t6, float t7, float t8)
+{
+    if(_simulator == XPLANE)
+    {
+        vout.push_back(std::tr1::shared_ptr<XPdata>(new XPthrottelc(t1, t2, t3, t4, 
+                        t5, t6, t7, t8)));
+    }
+}
+
+void Sim::sendToSim()
+{
+    if(_simulator == XPLANE)
+    {
+        std::vector<char> _dtg;
+        XPdata::prologue_to_dtg(_dtg);
+        for (XPdataVector::const_iterator i(vout.begin()),
+                i_end(vout.end()); i != i_end; ++i){
+            (*i)->to_dtg(_dtg);
+        }
+
+        _client.send(&*_dtg.begin(), _dtg.size());
+    }
+}
+
 void Sim::visit(XPaerangles * xp)
 {
     _aoa = xp->get_aoa();
@@ -331,9 +377,15 @@ void Sim::visit(XPgps * xp)
 
 void Sim::visit(XPloads * xp)
 {
+    float g = _gravity.g(_latitude, _altitude_msl);
+
     _gx = xp->get_gAxial();
     _gy = xp->get_gSide();
     _gz = xp->get_gNormal();
+
+    _ax = _gx * g;
+    _ay = _gy * g;
+    _az = _gz * g;
 }
 
 void Sim::visit(XPpqr * xp)

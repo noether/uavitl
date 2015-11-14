@@ -20,7 +20,9 @@ class XPthrottelc: public XPdata{
 
     public:
         XPthrottelc();
-        XPthrottelc (std::vector<char>::iterator &) ;
+        XPthrottelc(std::vector<char>::iterator &);
+        XPthrottelc(float, float, float, float,
+                float, float, float, float);
         ~XPthrottelc();
 
         float get_t1c();

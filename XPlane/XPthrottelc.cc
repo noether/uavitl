@@ -30,6 +30,19 @@ XPthrottelc::XPthrottelc(std::vector<char>::iterator & i){
     i += 4;
 }
 
+XPthrottelc::XPthrottelc(float t1, float t2, float t3, float t4, 
+        float t5, float t6, float t7, float t8)
+{
+    _t1c = t1;
+    _t2c = t2;
+    _t3c = t3;
+    _t4c = t4;
+    _t5c = t5;
+    _t6c = t6;
+    _t7c = t7;
+    _t8c = t8;
+}
+
 XPthrottelc::~XPthrottelc(){
 }
 

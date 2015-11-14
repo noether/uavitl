@@ -1,18 +1,42 @@
 #include "navigation.hh"
 
 Navigation::Navigation():
-    _raw_aoa(-999), _raw_aos(-999),
-    _raw_atm_pressure(-999),
-    _raw_roll(-999), _raw_pitch(-999), _raw_yaw(-999),
-    _raw_latitude(-999), _raw_longitude(-999), _raw_altitude_msl(-999),
-    _raw_ax(-999), _raw_ay(-999), _raw_az(-999),
-    _raw_wx(-999), _raw_wy(-999), _raw_wz(-999),
-    _raw_vkias(-999),
-    _raw_x(-999), _raw_y(-999), _raw_z(-999),
-    _raw_vx(-999), _raw_vy(-999), _raw_vz(-999)
+    _aoa(-999), _aos(-999),
+    _atm_pressure(-999),
+    _roll(-999), _pitch(-999), _yaw(-999),
+    _latitude(-999), _longitude(-999), _altitude_msl(-999),
+    _ax(-999), _ay(-999), _az(-999),
+    _wx(-999), _wy(-999), _wz(-999),
+    _vkias(-999),
+    _x(-999), _y(-999), _z(-999),
+    _vx(-999), _vy(-999), _vz(-999),
+    _sim(NULL), _sen(NULL)
+{
+}
+
+Navigation::Navigation(Sim *si, Sensors *se):
+    _aoa(-999), _aos(-999),
+    _atm_pressure(-999),
+    _roll(-999), _pitch(-999), _yaw(-999),
+    _latitude(-999), _longitude(-999), _altitude_msl(-999),
+    _ax(-999), _ay(-999), _az(-999),
+    _wx(-999), _wy(-999), _wz(-999),
+    _vkias(-999),
+    _x(-999), _y(-999), _z(-999),
+    _vx(-999), _vy(-999), _vz(-999),
+    _sim(si), _sen(se)
 {
 }
 
 Navigation::~Navigation()
 {
+}
+
+void Navigation::update()
+{
+    _roll = _sim->get_roll();
+    _pitch = _sim->get_pitch();
+    _yaw = _sim->get_yaw();
+
+    std::cout << _roll << std::endl;
 }

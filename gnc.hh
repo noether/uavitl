@@ -21,6 +21,9 @@ class GNC{
         void set_control(Control*);
 
         Navigation * get_nav();
+        void nav_update();
+        void con_update();
+        void gui_update();
 };
 
 #endif

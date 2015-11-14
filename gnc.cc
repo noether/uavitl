@@ -34,3 +34,18 @@ Navigation * GNC::get_nav()
 {
     return _n;
 }
+
+void GNC::nav_update()
+{
+    _n->update();
+}
+
+void GNC::con_update()
+{
+    _c->update();
+}
+
+void GNC::gui_update()
+{
+    _g->update();
+}

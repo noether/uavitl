@@ -17,6 +17,7 @@
 #include "./XPlane/XPthrottelc.hh"
 #include "./XPlane/XPxyz.hh"
 #include "./XPlane/XPyoke.hh"
+#include "./environment/gravity.hh"
 
 enum Simulator{
     XPLANE};
@@ -28,6 +29,7 @@ class Sim
         Simulator _simulator;
 
         std::vector<char> _datagram;
+        XPdataVector vout;
         udp_server _server;
         udp_client _client;
 
@@ -39,6 +41,7 @@ class Sim
         float _gear, _brakew, _brakel, _braker;
         float _latitude, _longitude, _altitude_msl;
         float _gx, _gy, _gz;
+        float _ax, _ay, _az;
         float _wx, _wy, _wz;
         float _vkias;
         float _t1c, _t2c, _t3c, _t4c, _t5c, _t6c, _t7c, _t8c;
@@ -47,13 +50,18 @@ class Sim
         float _vx, _vy, _vz;
         float _elevc, _ailc, _rudc;
 
+        Gravity _gravity;
+
     public:
         Sim(std::string, int, int, Simulator);
         ~Sim();
 
         void connect();
         void readFromSim();
+        void sendToSim();
         Simulator get_simulator();
+
+        void clearvout();
 
         float get_aoa();
         float get_aos();
@@ -71,6 +79,9 @@ class Sim
         float get_gx();
         float get_gy();
         float get_gz();
+        float get_ax();
+        float get_ay();
+        float get_az();
         float get_wx();
         float get_wy();
         float get_wz();
@@ -100,6 +111,9 @@ class Sim
         float get_elevc();
         float get_ailc();
         float get_rudc();
+
+        void set_tc(float, float, float, float,
+                float, float, float, float);
 
         void visit(XPaerangles *);
         void visit(XPatmosphere *);
