@@ -1,6 +1,7 @@
 LIBS_PATH = -I/usr/include/eigen3
 COMM_PATH = ./comm/
 XPLANE_PATH = ./XPlane/
+ENVIRONMENT_PATH = ./environment/
 
 CXX = g++-4.9
 CXXFLAGS=-std=c++11 -Wall -Wextra -O2 -ggdb3 $(LIBS_PATH)
@@ -19,6 +20,7 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(XPLANE_PATH)XPyoke.o \
 				 $(XPLANE_PATH)XPaerangles.o \
 				 $(XPLANE_PATH)XPatmosphere.o \
+				 $(ENVIRONMENT_PATH)gravity.o \
 				 sim.o \
 				 flyingmachine.o \
 				 guidance.o \
@@ -36,6 +38,7 @@ uavitl: $(OBJECTS_UAVITL)
 clean:
 	$(RM) *~ *.o *.swp uavitl \
 		$(COMM_PATH)*~  $(COMM_PATH)*.o $(COMM_PATH)*.swp  \
-		$(XPLANE_PATH)*~  $(XPLANE_PATH)*.o $(XPLANE_PATH)*.swp
+		$(XPLANE_PATH)*~  $(XPLANE_PATH)*.o $(XPLANE_PATH)*.swp \
+		$(ENVIRONMENT_PATH)*~  $(ENVIRONMENT_PATH)*.o $(ENVIRONMENT_PATH)*.swp
 
 .PHONY: clean

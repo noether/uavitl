@@ -2,6 +2,7 @@
 #define SENSORS_HH 1
 
 #include "Eigen/Core"
+#include "./environment/gravity.hh"
 
 class Sensors
 {
@@ -14,6 +15,7 @@ class Sensors
         float _ve, _vn, _vu;
         float _roll, _pitch, _yaw;
         float _aoa, _aos;
+        Gravity _gravity;
 
     public:
         Sensors();
