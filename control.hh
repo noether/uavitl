@@ -3,16 +3,18 @@
 
 #include "sim.hh"
 #include "navigation.hh"
+#include "guidance.hh"
 
 class Control
 {
     private:
         Sim *_sim;
         Navigation *_nav;
+        Guidance *_gui;
 
     public:
         Control();
-        Control(Sim *, Navigation *);
+        Control(Sim *, Navigation *, Guidance *);
         ~Control();
 
         void update();

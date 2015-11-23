@@ -2,6 +2,7 @@ LIBS_PATH = -I/usr/include/eigen3
 COMM_PATH = ./comm/
 XPLANE_PATH = ./XPlane/
 ENVIRONMENT_PATH = ./environment/
+MATH_PATH = ./math/
 
 CXX = g++-4.9
 CXXFLAGS=-std=c++11 -Wall -Wextra -O2 -ggdb3 $(LIBS_PATH)
@@ -21,6 +22,7 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(XPLANE_PATH)XPaerangles.o \
 				 $(XPLANE_PATH)XPatmosphere.o \
 				 $(ENVIRONMENT_PATH)gravity.o \
+				 $(MATH_PATH)math_util.o \
 				 sim.o \
 				 flyingmachine.o \
 				 guidance.o \

@@ -20,6 +20,7 @@
 #include "./environment/gravity.hh"
 
 enum Simulator{
+    NONE,
     XPLANE};
 
 class Sim
@@ -53,6 +54,7 @@ class Sim
         Gravity _gravity;
 
     public:
+        Sim();
         Sim(std::string, int, int, Simulator);
         ~Sim();
 

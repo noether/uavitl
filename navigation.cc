@@ -32,11 +32,60 @@ Navigation::~Navigation()
 {
 }
 
+void Navigation::get_body_accelerations(float *a)
+{
+    a[0] = _ax;
+    a[1] = _ay;
+    a[2] = _az;
+}
+
+void Navigation::get_pqr(float *w)
+{
+    w[0] = _wx;
+    w[1] = _wy;
+    w[2] = _wz;
+}
+
+float Navigation::get_roll()
+{
+    return _roll;
+}
+
+float Navigation::get_pitch()
+{
+    return _pitch;
+}
+
+float Navigation::get_yaw()
+{
+    return _yaw;
+}
+
+float Navigation::get_altitude_msl()
+{
+    return _altitude_msl;
+}
+
 void Navigation::update()
 {
+    float acc[3];
+    float gyr[3];
+    float gps[3];
+
+    _sen->get_accelerometers(acc);
+    _ax = acc[0];
+    _ay = acc[1];
+    _az = acc[2];
+
+    _sen->get_gyroscopes(gyr);
+    _wx = gyr[0];
+    _wy = gyr[1];
+    _wz = gyr[2];
+
+    _sen->get_gps_coord(gps);
+    _altitude_msl = gps[2];
+    
     _roll = _sim->get_roll();
     _pitch = _sim->get_pitch();
     _yaw = _sim->get_yaw();
-
-    std::cout << _roll << std::endl;
 }

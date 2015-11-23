@@ -7,13 +7,27 @@
 class Guidance
 {
     private:
-        Sim *_sim;
         Navigation *_nav;
+
+        float _m;
+        float _aE;
+        float _aN;
+        float _aU;
+
+        float _e_amsl;
+        float _e_psi;
+        float _e_phi;
+        float _e_the;
 
     public:
         Guidance();
-        Guidance(Sim *, Navigation *);
+        Guidance(Navigation *);
         ~Guidance();
+
+        float get_e_amsl();
+        float get_e_psi();
+        float get_e_phi();
+        float get_e_the();
 
         void update();
 };

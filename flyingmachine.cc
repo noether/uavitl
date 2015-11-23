@@ -32,7 +32,7 @@ void Flyingmachine::update(long t)
     }
 
     t++;
-    
+
     _sen->read_all();
     _gnc->nav_update();
     _gnc->gui_update();

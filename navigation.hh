@@ -23,11 +23,17 @@ class Navigation
         Sim * _sim;
         Sensors * _sen;
 
-
     public:
         Navigation();
         Navigation(Sim *, Sensors *);
         ~Navigation();
+
+        void get_body_accelerations(float *);
+        void get_pqr(float *);
+        float get_roll();
+        float get_pitch();
+        float get_yaw();
+        float get_altitude_msl();
 
         void update();
 };

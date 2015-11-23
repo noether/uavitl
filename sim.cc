@@ -1,17 +1,58 @@
 #include <iostream>
 #include <string>
+#include <math.h>
 
 #include "sim.hh"
 #include "./comm/udp_client_server.hh"
 #include "./XPlane/XPdata.hh"
 #include "./environment/gravity.hh"
 
+Sim::Sim():
+    _ip("0.0.0.0"),
+    _simulator(NONE),
+    _server(udp_server("0.0.0.0", -1)),
+    _client(udp_client("0.0.0.0", -1)),
+    _aoa(-999), _aos(-999),
+    _atm_pressure(-999),
+    _roll(-999), _pitch(-999), _yaw(-999),
+    _gear(-999), _brakew(-999), _brakel(-999), _braker(-999),
+    _latitude(-999), _longitude(-999), _altitude_msl(-999),
+    _gx(-999), _gy(-999), _gz(-999),
+    _ax(-999), _ay(-999), _az(-999),
+    _wx(-999), _wy(-999), _wz(-999),
+    _vkias(-999),
+    _t1c(-999), _t2c(-999), _t3c(-999), _t4c(-999),
+    _t5c(-999), _t6c(-999), _t7c(-999), _t8c(-999),
+    _t1a(-999), _t2a(-999), _t3a(-999), _t4a(-999),
+    _t5a(-999), _t6a(-999), _t7a(-999), _t8a(-999),
+    _x(-999), _y(-999), _z(-999),
+    _vx(-999), _vy(-999), _vz(-999),
+    _elevc(-999), _ailc(-999), _rudc(-999)
+{
+}
+
 Sim::Sim(std::string ip, int udp_port_in,
         int udp_port_out, Simulator simulator):
     _ip(ip),
     _simulator(simulator),
     _server(udp_server(_ip.c_str(), udp_port_out)),
-    _client(udp_client(_ip.c_str(), udp_port_in))
+    _client(udp_client(_ip.c_str(), udp_port_in)),
+    _aoa(-999), _aos(-999),
+    _atm_pressure(-999),
+    _roll(-999), _pitch(-999), _yaw(-999),
+    _gear(-999), _brakew(-999), _brakel(-999), _braker(-999),
+    _latitude(-999), _longitude(-999), _altitude_msl(-999),
+    _gx(-999), _gy(-999), _gz(-999),
+    _ax(-999), _ay(-999), _az(-999),
+    _wx(-999), _wy(-999), _wz(-999),
+    _vkias(-999),
+    _t1c(-999), _t2c(-999), _t3c(-999), _t4c(-999),
+    _t5c(-999), _t6c(-999), _t7c(-999), _t8c(-999),
+    _t1a(-999), _t2a(-999), _t3a(-999), _t4a(-999),
+    _t5a(-999), _t6a(-999), _t7a(-999), _t8a(-999),
+    _x(-999), _y(-999), _z(-999),
+    _vx(-999), _vy(-999), _vz(-999),
+    _elevc(-999), _ailc(-999), _rudc(-999)
 {
 }
 
@@ -322,8 +363,8 @@ void Sim::set_tc(float t1, float t2, float t3, float t4,
 {
     if(_simulator == XPLANE)
     {
-        vout.push_back(std::tr1::shared_ptr<XPdata>(new XPthrottelc(t1, t2, t3, t4, 
-                        t5, t6, t7, t8)));
+        vout.push_back(std::tr1::shared_ptr<XPdata>
+                (new XPthrottelc(t1, t2, t3, t4, t5, t6, t7, t8)));
     }
 }
 
@@ -344,8 +385,8 @@ void Sim::sendToSim()
 
 void Sim::visit(XPaerangles * xp)
 {
-    _aoa = xp->get_aoa();
-    _aos = xp->get_aos();
+    _aoa = xp->get_aoa()*M_PI/180;
+    _aos = xp->get_aos()*M_PI/180;
 }
 
 void Sim::visit(XPatmosphere * xp)
@@ -355,9 +396,9 @@ void Sim::visit(XPatmosphere * xp)
 
 void Sim::visit(XPattitude * xp)
 {
-    _roll = xp->get_roll();
-    _pitch = xp->get_pitch();
-    _yaw = xp->get_yaw();
+    _roll = xp->get_roll()*M_PI/180;
+    _pitch = xp->get_pitch()*M_PI/180;
+    _yaw = xp->get_yaw()*M_PI/180;
 }
 
 void Sim::visit(XPgearbrakes * xp)

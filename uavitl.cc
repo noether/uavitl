@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
     int udp_xplane_out_q1 = 60001;
     Sim xp_q1(ip_q1, udp_xplane_in_q1, udp_xplane_out_q1, XPLANE);
     Sensors sen_q1(&xp_q1);
-    Guidance g_q1;
     Navigation n_q1(&xp_q1, &sen_q1);
-    Control c_q1(&xp_q1, &n_q1);
+    Guidance g_q1(&n_q1);
+    Control c_q1(&xp_q1, &n_q1, &g_q1);
     GNC gnc_q1(&g_q1, &n_q1, &c_q1);
 
     Flyingmachine quad_1(&xp_q1, &gnc_q1, &sen_q1);
@@ -43,7 +43,6 @@ int main(int argc, char* argv[])
         quad_1.update(time);
 
         time += dt;
-        std::cout << time << " ns" << std::endl;
         if(time >= 1e10)
             break;
 
