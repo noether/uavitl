@@ -19,6 +19,8 @@ class Guidance
         float _e_phi;
         float _e_the;
 
+        float _e_az;
+
     public:
         Guidance();
         Guidance(Navigation *);
@@ -28,6 +30,7 @@ class Guidance
         float get_e_psi();
         float get_e_phi();
         float get_e_the();
+        float get_e_az();
 
         void update();
 };

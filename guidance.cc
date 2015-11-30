@@ -40,6 +40,11 @@ float Guidance::get_e_the()
     return _e_the;
 }
 
+float Guidance::get_e_az()
+{
+    return _e_az;
+}
+
 void Guidance::update()
 {
     float psi = _nav->get_yaw();
@@ -58,4 +63,8 @@ void Guidance::update()
     _e_psi  = _nav->get_yaw() - g_psi;
     _e_phi  = _nav->get_roll() - g_phi;
     _e_the  = _nav->get_pitch() - g_the;
+
+    float g_d = 1e-3*_e_amsl;
+    _e_az = body_acc[2] - g_d;
+
 }

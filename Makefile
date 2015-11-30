@@ -5,7 +5,7 @@ ENVIRONMENT_PATH = ./environment/
 MATH_PATH = ./math/
 
 CXX = g++-4.9
-CXXFLAGS=-std=c++11 -Wall -Wextra -O2 -ggdb3 $(LIBS_PATH)
+CXXFLAGS=-std=c++11 -Wall -Wextra -O0 -ggdb3 $(LIBS_PATH)
 
 OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(XPLANE_PATH)XPdata.o \
