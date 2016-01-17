@@ -10,61 +10,72 @@ Guidance::Guidance():
 Guidance::Guidance(Navigation *n):
     _nav(n)
 {
-     _m = 1;
-     _aE = 0;
-     _aN = 0;
-     _aU = 0;
 }
 
 Guidance::~Guidance()
 {
 }
 
-float Guidance::get_e_amsl()
+float Guidance::get_roll_d()
 {
-    return _e_amsl;
+    return _roll_d;
 }
 
-float Guidance::get_e_psi()
+float Guidance::get_pitch_d()
 {
-    return _e_psi;
+    return _pitch_d;
 }
 
-float Guidance::get_e_phi()
+float Guidance::get_yaw_d()
 {
-    return _e_phi;
+    return _yaw_d;
 }
 
-float Guidance::get_e_the()
+float Guidance::get_alt_d()
 {
-    return _e_the;
+    return _alt_d;
 }
 
-float Guidance::get_e_az()
+float Guidance::get_T_d()
 {
-    return _e_az;
+    return _T_d;
 }
 
-void Guidance::update()
+void Guidance::set_xyz_ned_lya(float *xyz_d)
 {
-    float psi = _nav->get_yaw();
-    float body_acc[3];
-    _nav->get_body_accelerations(body_acc);
+    float m;
+    float psi;
+    float xyz[3];
+    float v_ned[3];
 
-    float tps = tanf(psi);
-    float cps = cosf(psi);
+    m = _nav->get_mass();
+    psi = _nav->get_yaw();
+    _nav->get_xyz(xyz);
+    _nav->get_v_ned(v_ned);
 
-    float g_altitude_msl = 3000;
-    float g_psi = 0;
-    float g_phi = (-_aN + _aE*tps) * cps / body_acc[2];
-    float g_the = (_aE + _aN*tps) * cps / body_acc[2];
+    float e_x = xyz_d[0] - xyz[0];
+    float e_y = xyz_d[1] - xyz[1];
+    float e_z = xyz_d[2] - xyz[2];
+    _e_alt = e_z;
 
-    _e_amsl = _nav->get_altitude_msl() - g_altitude_msl;
-    _e_psi  = _nav->get_yaw() - g_psi;
-    _e_phi  = _nav->get_roll() - g_phi;
-    _e_the  = _nav->get_pitch() - g_the;
+    az_d = (-_xi_g -_gravity_guess -_k_alt*e_z -_k_vz*v_ned[2]);
+    ax_d = -_k_xy*e_x -_k_vxy*v_ned[0];
+    ay_d = -_k_xy*e_y -_k_vxy*v_ned[1];
 
-    float g_d = 1e-3*_e_amsl;
-    _e_az = body_acc[2] - g_d;
+    _T_d = az_d*m;
+    _roll_d = -1/az_d * (ay_d*cosf(psi) - ax_d*sinf(psi));
+    _pitch_d =  1/az_d * (ax_d*cosf(psi) + ay_d*sinf(psi));
+}
 
+void step_estimator_xi(float dt)
+{
+    float v_ned[3];
+    _nav->get_v_ned(v_ned);
+
+    _xi_g = _xi_g + _k_xi_g_v*v_ned[2] + _k_xi_g_e_alt*_e_alt;
+}
+
+void Guidance::update(float dt)
+{
+    step_estimator_xi_g(dt);
 }

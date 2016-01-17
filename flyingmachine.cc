@@ -7,15 +7,15 @@
 
 Flyingmachine::Flyingmachine():
     _sim(NULL),
-    _gnc(NULL),
-    _sen(NULL)
+    _sen(NULL),
+    _gnc(NULL)
 {
 }
 
-Flyingmachine::Flyingmachine(Sim *sim, GNC *gnc, Sensors *sen):
+Flyingmachine::Flyingmachine(Sim *sim, Sensors *sen, GNC *gnc):
     _sim(sim),
-    _gnc(gnc),
-    _sen(sen)
+    _sen(sen),
+    _gnc(gnc)
 {
     _sim->connect();
 }
@@ -26,21 +26,10 @@ Flyingmachine::~Flyingmachine()
 
 void Flyingmachine::update(long t)
 {
-    if(_sim->get_simulator() == XPLANE)
-    {
-        _sim->readFromSim();
+    _sim->readFromSim();
+    if (t > 5e8){
+        _sen->update(t);
+        _gnc->update(t);
     }
-
-    t++;
-
-    _sen->read_all();
-    _gnc->nav_update();
-    _gnc->gui_update();
-    _gnc->con_update();
-
-    if(_sim->get_simulator() == XPLANE)
-    {
-        _sim->sendToSim();
-        _sim->clearvout();
-    }
+    _sim->sendToSim();
 }

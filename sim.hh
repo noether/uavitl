@@ -48,7 +48,7 @@ class Sim
         float _t1c, _t2c, _t3c, _t4c, _t5c, _t6c, _t7c, _t8c;
         float _t1a, _t2a, _t3a, _t4a, _t5a, _t6a, _t7a, _t8a;
         float _x, _y, _z;
-        float _vx, _vy, _vz;
+        float _ve, _vn, _vu;
         float _elevc, _ailc, _rudc;
 
         Gravity _gravity;
@@ -107,9 +107,9 @@ class Sim
         float get_x();
         float get_y();
         float get_z();
-        float get_vx();
-        float get_vy();
-        float get_vz();
+        float get_ve();
+        float get_vn();
+        float get_vu();
         float get_elevc();
         float get_ailc();
         float get_rudc();

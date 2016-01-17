@@ -19,6 +19,7 @@
 #include "udp_client_server.hh"
 #include <string.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 
 // ========================= CLIENT =========================
@@ -84,6 +85,7 @@ void udp_client::connect()
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_PASSIVE;
+    hints.ai_protocol = IPPROTO_UDP;
     int r(getaddrinfo(f_addr.c_str(), decimal_port, &hints, &f_addrinfo));
     if(r != 0 || f_addrinfo == NULL)
     {
@@ -246,6 +248,7 @@ void udp_server::connect()
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags = AI_PASSIVE;
+    hints.ai_protocol = IPPROTO_UDP;
     int r(getaddrinfo(f_addr.c_str(), decimal_port, &hints, &f_addrinfo));
     if(r != 0 || f_addrinfo == NULL)
     {
@@ -272,6 +275,8 @@ void udp_server::connect()
               + f_addr + ":" + decimal_port + "\"").c_str());
     }
 
+    int SocketMode = 1;
+    ioctl(f_socket, FIONBIO, &SocketMode);
     connected = 1;
 }
 

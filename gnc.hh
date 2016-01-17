@@ -1,29 +1,18 @@
 #ifndef GNC_HH
 #define GNC_HH 1
 
-#include "guidance.hh"
-#include "navigation.hh"
-#include "control.hh"
+#include "sim.hh"
 
 class GNC{
-    private:
-        Guidance *_g;
-        Navigation *_n;
-        Control *_c;
+    protected:
+        Sim *_sim;
 
     public:
-        GNC(Guidance*, Navigation*, Control*);
+        GNC(Sim *);
         GNC();
         ~GNC();
 
-        void set_guidance(Guidance*);
-        void set_navigation(Navigation*);
-        void set_control(Control*);
-
-        Navigation * get_nav();
-        void nav_update();
-        void con_update();
-        void gui_update();
+        virtual void update(long) =0;
 };
 
 #endif

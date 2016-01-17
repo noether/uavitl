@@ -3,8 +3,9 @@ COMM_PATH = ./comm/
 XPLANE_PATH = ./XPlane/
 ENVIRONMENT_PATH = ./environment/
 MATH_PATH = ./math/
+QUAD_PATH = ./quadrotor/
 
-CXX = g++-4.9
+CXX = g++-5
 CXXFLAGS=-std=c++11 -Wall -Wextra -O0 -ggdb3 $(LIBS_PATH)
 
 OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
@@ -25,11 +26,10 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(MATH_PATH)math_util.o \
 				 sim.o \
 				 flyingmachine.o \
-				 guidance.o \
-				 navigation.o \
-				 control.o \
 				 gnc.o \
 				 sensors.o \
+				 $(QUAD_PATH)quad_gnc.o \
+				 $(QUAD_PATH)quad_sensors.o \
 				 uavitl.o
 
 all: uavitl
@@ -41,6 +41,7 @@ clean:
 	$(RM) *~ *.o *.swp uavitl \
 		$(COMM_PATH)*~  $(COMM_PATH)*.o $(COMM_PATH)*.swp  \
 		$(XPLANE_PATH)*~  $(XPLANE_PATH)*.o $(XPLANE_PATH)*.swp \
-		$(ENVIRONMENT_PATH)*~  $(ENVIRONMENT_PATH)*.o $(ENVIRONMENT_PATH)*.swp
+		$(ENVIRONMENT_PATH)*~  $(ENVIRONMENT_PATH)*.o $(ENVIRONMENT_PATH)*.swp \
+		$(QUAD_PATH)*~  $(QUAD_PATH)*.o $(QUAD_PATH)*.swp \
 
 .PHONY: clean

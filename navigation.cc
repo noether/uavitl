@@ -46,6 +46,20 @@ void Navigation::get_pqr(float *w)
     w[2] = _wz;
 }
 
+void Navigation::get_xyz(float *xyz)
+{
+    xyz[0] = _x;
+    xyz[1] = _y;
+    xyz[2] = _z;
+}
+
+void get_v_ned(float *v_ned)
+{
+    v_ned[0] = _vx;
+    v_ned[1] = _vy;
+    v_ned[2] = _vz;
+}
+
 float Navigation::get_roll()
 {
     return _roll;
@@ -64,6 +78,31 @@ float Navigation::get_yaw()
 float Navigation::get_altitude_msl()
 {
     return _altitude_msl;
+}
+
+Eigen::Matrix3f Navigation::get_J()
+{
+    return _J;
+}
+
+float Navigation::get_m()
+{
+    return _m;
+}
+
+float Navigation::get_l()
+{
+    return _l;
+}
+
+float Navigation::get_kt()
+{
+    return _kt;
+}
+
+float Navigation::get_km()
+{
+    return _km;
 }
 
 void Navigation::update()

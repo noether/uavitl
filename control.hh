@@ -14,16 +14,25 @@ class Control
         Navigation *_nav;
         Guidance *_gui;
 
-        float _kf;
-        float _dkf;
-        float _km;
+        // Quad setup
+        Eigen::Matrix4f _w_to_Tlmn;
+        Eigen::Matrix4f _Tlmn_to_w;
 
-        Eigen::Matrix4f uf_to_u;
+        // Gains and variables for the attitude controller
+        float _kp;
+        float _kq;
+        float _kr;
+        float _l_d;
+        float _m_d;
+        float _n_d;
 
     public:
         Control();
         Control(Sim *, Navigation *, Guidance *);
         ~Control();
+
+        void control_att();
+        void control_motors();
 
         void update();
 };

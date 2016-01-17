@@ -26,7 +26,7 @@ Sim::Sim():
     _t1a(-999), _t2a(-999), _t3a(-999), _t4a(-999),
     _t5a(-999), _t6a(-999), _t7a(-999), _t8a(-999),
     _x(-999), _y(-999), _z(-999),
-    _vx(-999), _vy(-999), _vz(-999),
+    _ve(-999), _vn(-999), _vu(-999),
     _elevc(-999), _ailc(-999), _rudc(-999)
 {
 }
@@ -51,7 +51,7 @@ Sim::Sim(std::string ip, int udp_port_in,
     _t1a(-999), _t2a(-999), _t3a(-999), _t4a(-999),
     _t5a(-999), _t6a(-999), _t7a(-999), _t8a(-999),
     _x(-999), _y(-999), _z(-999),
-    _vx(-999), _vy(-999), _vz(-999),
+    _ve(-999), _vn(-999), _vu(-999),
     _elevc(-999), _ailc(-999), _rudc(-999)
 {
 }
@@ -70,6 +70,7 @@ int Sim::_readDatagram(){
 
     _datagram.resize(1000, 0);
     readBytes = _server.recv(&*_datagram.begin(), _datagram.size(), 0);
+    std::cout << "Read bytes: " << readBytes << std::endl;
     if (readBytes < 0)
         return readBytes;
     _datagram.resize(readBytes);
@@ -81,30 +82,31 @@ void Sim::readFromSim(){
     if(_simulator == XPLANE){
         XPdataVector v;
 
-        _readDatagram();
-        int isData = 1;
-        const char *data= "DATA";
+        if(_readDatagram() > 0)
+        {
+            int isData = 1;
+            const char *data= "DATA";
 
-        std::vector<char>::iterator i(_datagram.begin());
-        std::vector<char>::iterator ii(_datagram.end());
+            std::vector<char>::iterator i(_datagram.begin());
+            std::vector<char>::iterator ii(_datagram.end());
 
-        for(int iii = 0; iii < 4; ++iii)
-            if (*(i+iii) != data[iii])
-                isData = 0;
+            for(int iii = 0; iii < 4; ++iii)
+                if (*(i+iii) != data[iii])
+                    isData = 0;
 
-        if(isData){
-            std::tr1::shared_ptr<XPdata> _xpd;
-            i+=5;
-
-            while(i != (ii)){
-                _xpd.reset(XPdata::create(i));
-                if(_xpd)
-                    v.push_back(_xpd);
+            if(isData){
+                std::tr1::shared_ptr<XPdata> _xpd;
+                i+=5;
+                while(i != (ii)){
+                    _xpd.reset(XPdata::create(i));
+                    if(_xpd)
+                        v.push_back(_xpd);
+                }
             }
-        }
 
-        for(auto v_i(v.begin()); v_i != v.end(); ++v_i)
-            (*v_i)->accept(this);
+            for(auto v_i(v.begin()); v_i != v.end(); ++v_i)
+                (*v_i)->accept(this);
+        }
     }
 }
 
@@ -328,19 +330,19 @@ float Sim::get_z()
     return _z;
 }
 
-float Sim::get_vx()
+float Sim::get_ve()
 {
-    return _vx;
+    return _ve;
 }
 
-float Sim::get_vy()
+float Sim::get_vn()
 {
-    return _vy;
+    return _vn;
 }
 
-float Sim::get_vz()
+float Sim::get_vu()
 {
-    return _vz;
+    return _vu;
 }
 
 float Sim::get_elevc()
@@ -380,6 +382,7 @@ void Sim::sendToSim()
         }
 
         _client.send(&*_dtg.begin(), _dtg.size());
+        clearvout();
     }
 }
 
@@ -411,15 +414,17 @@ void Sim::visit(XPgearbrakes * xp)
 
 void Sim::visit(XPgps * xp)
 {
-    _latitude = xp->get_latitude();
-    _longitude = xp->get_longitude();
-    _altitude_msl = xp->get_altitudeFmsl();
+    _latitude = xp->get_latitude()*M_PI/180;
+    _longitude = xp->get_longitude()*M_PI/180;
+    _altitude_msl = xp->get_altitudeFmsl()*0.3048; // Feet to meters
 }
 
 void Sim::visit(XPloads * xp)
 {
+    // WGS84 gravity model
     float g = _gravity.g(_latitude, _altitude_msl);
 
+    // NED frame of coordinates
     _gx = xp->get_gAxial();
     _gy = xp->get_gSide();
     _gz = xp->get_gNormal();
@@ -467,12 +472,13 @@ void Sim::visit(XPthrottelc * xp)
 
 void Sim::visit(XPxyz * xp)
 {
-    _x = xp->get_x();
-    _y = xp->get_y();
-    _z = xp->get_z();
-    _vx = xp->get_vx();
-    _vy = xp->get_vy();
-    _vz = xp->get_vz();
+    // In XPlane, X points at the EAST, Y at UP and Z at SOUTH
+    _x =  -xp->get_z();
+    _y =   xp->get_x();
+    _z =  -xp->get_y();
+    _ve =  xp->get_vx();
+    _vn = -xp->get_vz();
+    _vu =  xp->get_vy();
 }
 
 void Sim::visit(XPyoke * xp)

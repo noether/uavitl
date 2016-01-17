@@ -11,12 +11,12 @@ class Flyingmachine
 {
     private:
         Sim *_sim;
-        GNC *_gnc;
         Sensors *_sen;
+        GNC *_gnc;
 
     public:
         Flyingmachine();
-        Flyingmachine(Sim*, GNC*, Sensors*);
+        Flyingmachine(Sim*, Sensors*, GNC*);
         ~Flyingmachine();
 
         void update(long t);

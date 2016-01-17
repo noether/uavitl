@@ -20,6 +20,13 @@ class Navigation
         float _vx, _vy, _vz;
         float _elevc, _ailc, _rudc;
 
+        // Mechanics
+        Eigen::Matrix3f _J; // Inertia matrix [Kg/m^2]
+        float _l; // Radius of the quad [m]
+        float _m; // Mass of the quad [Kg]
+        float _kt; // Propeller thrust [N s^2]
+        float _km; // Propeller thrust [N m s^2]
+
         Sim * _sim;
         Sensors * _sen;
 
@@ -30,10 +37,17 @@ class Navigation
 
         void get_body_accelerations(float *);
         void get_pqr(float *);
+        void get_xyz(float *);
+        void get_v_ned(float *);
         float get_roll();
         float get_pitch();
         float get_yaw();
         float get_altitude_msl();
+        Eigen::Matrix3f get_J();
+        float get_l();
+        float get_m();
+        float get_kt();
+        float get_km();
 
         void update();
 };
