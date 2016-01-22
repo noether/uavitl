@@ -18,6 +18,7 @@ class Quad_GNC: public GNC{
 
         // Navigation
         float _roll, _pitch, _yaw;
+        float _ax, _ay, _az;
         float _vn, _ve, _vd;
         float _x, _y, _z;
         float _alt;
@@ -78,7 +79,7 @@ class Quad_GNC: public GNC{
         void control_xyz_ned_lya();
         void control_v_2D_alt_lya();
         void control_a_2D_alt_lya();
-        void control_a_ned_lya();
+        void control_a_ned();
         void step_estimator_xi_g(float);
         void step_estimator_xi_CD(float);
 

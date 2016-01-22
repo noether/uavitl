@@ -62,11 +62,14 @@ int main(int argc, char* argv[])
 
     q1_gnc->set_xyz_zero(0.824756, 0.198016, 576.5);
     q1_gnc->set_yaw_d(M_PI/4);
-    q1_gnc->set_active_controller(XYZ);
-    q1_gnc->set_xyz(-10, -2, -10);
+  //  q1_gnc->set_active_controller(XYZ);
+  //  q1_gnc->set_xyz(0, 0, -70);
     
- //   q1_gnc->set_active_controller(V_2D_ALT);
- //   q1_gnc->set_v_2D_alt(0, 0, -600);
+  //  q1_gnc->set_active_controller(V_2D_ALT);
+  //  q1_gnc->set_v_2D_alt(0, 0, -600);
+
+    q1_gnc->set_active_controller(V_2D_ALT);
+    q1_gnc->set_v_2D_alt(2.5, 0, -600);
 
 
     std::string q2_ip("127.0.0.1");
