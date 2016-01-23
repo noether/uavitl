@@ -7,6 +7,7 @@ Quad_GNC::Quad_GNC():
     GNC(NULL),
     _sen(NULL),
     _roll(-999), _pitch(-999), _yaw(-999),
+    _ax(-999), _ay(-999), _az(-999),
     _vn(-999), _ve(-999), _vd(-999),
     _x(-999), _y(-999), _z(-999),
     _alt(-999),
@@ -45,6 +46,7 @@ Quad_GNC::Quad_GNC(Sim *sim, Quad_Sensors *sen):
     GNC(sim),
     _sen(sen),
     _roll(-999), _pitch(-999), _yaw(-999),
+    _ax(-999), _ay(-999), _az(-999),
     _vn(-999), _ve(-999), _vd(-999),
     _x(-999), _y(-999), _z(-999),
     _alt(-999),
@@ -164,7 +166,7 @@ void Quad_GNC::update(long t)
             step_estimator_xi_g(dt);
             break;
         case A_3D:
-            control_a_ned_lya();
+            control_a_ned();
             break;
         default:
             break;
@@ -178,6 +180,13 @@ void Quad_GNC::navigation_update()
     _roll = _sim->get_roll();
     _pitch = _sim->get_pitch();
     _yaw = _sim->get_yaw();
+
+    // Accelerometers estimation
+    float a_body[3];
+    _sen->get_accelerometers(a_body);
+    _ax = a_body[0];
+    _ay = a_body[1];
+    _az = a_body[2];
 
     // Velocity estimation
     float v_enu[3];
@@ -405,12 +414,12 @@ void Quad_GNC::control_a_2D_alt_lya()
     control_att_lya(phi_d, the_d, _yaw_d, T_d);
 }
 
-void Quad_GNC::control_a_ned_lya()
+void Quad_GNC::control_a_ned()
 {
     // Desired accelerations
     float ax_d = _an_d;
     float ay_d = _ae_d;
-    float az_d = _ad_d;
+    float az_d = _ad_d - 9.82;
 
     // Desired attitude and thrust
     float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
