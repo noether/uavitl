@@ -2,8 +2,8 @@ LIBS_PATH = -I/usr/include/eigen3
 COMM_PATH = ./comm/
 XPLANE_PATH = ./XPlane/
 ENVIRONMENT_PATH = ./environment/
-MATH_PATH = ./math/
 QUAD_PATH = ./quadrotor/
+FORMATION_PATH = ./formation/
 
 CXX = g++-5
 CXXFLAGS=-std=c++11 -Wall -Wextra -O0 -ggdb3 $(LIBS_PATH)
@@ -23,13 +23,13 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(XPLANE_PATH)XPaerangles.o \
 				 $(XPLANE_PATH)XPatmosphere.o \
 				 $(ENVIRONMENT_PATH)gravity.o \
-				 $(MATH_PATH)math_util.o \
 				 sim.o \
 				 flyingmachine.o \
 				 gnc.o \
 				 sensors.o \
 				 $(QUAD_PATH)quad_gnc.o \
 				 $(QUAD_PATH)quad_sensors.o \
+				 $(FORMATION_PATH)distance_formation.o \
 				 uavitl.o
 
 all: uavitl
@@ -43,5 +43,6 @@ clean:
 		$(XPLANE_PATH)*~  $(XPLANE_PATH)*.o $(XPLANE_PATH)*.swp \
 		$(ENVIRONMENT_PATH)*~  $(ENVIRONMENT_PATH)*.o $(ENVIRONMENT_PATH)*.swp \
 		$(QUAD_PATH)*~  $(QUAD_PATH)*.o $(QUAD_PATH)*.swp \
+		$(FORMATION_PATH)*~  $(FORMATION_PATH)*.o $(FORMATION_PATH)*.swp \
 
 .PHONY: clean
