@@ -29,8 +29,8 @@ class DistanceFormation
 
         float _c_shape, _c_vel;
 
-        Eigen::MatrixXf _make_S1_S2();
-        Eigen::MatrixXf _make_Av_Aa();
+        void _make_S1_S2();
+        void _make_Av_Aa();
         Eigen::MatrixXf _make_Dz(Eigen::VectorXf);
         Eigen::MatrixXf _make_Dzt(Eigen::VectorXf);
         Eigen::MatrixXf _make_Dzh(Eigen::VectorXf);
@@ -38,13 +38,13 @@ class DistanceFormation
 
     public:
         DistanceFormation(int, int, Eigen::VectorXf, Eigen::VectorXf,
-                Eigen::VectorXf, Eigen::MatrixXf, float, float)
+                Eigen::VectorXf, Eigen::MatrixXf, float, float);
         DistanceFormation();
         ~DistanceFormation();
 
         void set_mus(Eigen::VectorXf, Eigen::VectorXf);
         Eigen::VectorXf get_u_acc(Eigen::VectorXf, Eigen::VectorXf);
-        Eigen::VectorXf get_u_acc(Eigen::VectorXf);
+        Eigen::VectorXf get_u_vel(Eigen::VectorXf);
 };
 
 #endif // DISTANCE_FORMATION_HH

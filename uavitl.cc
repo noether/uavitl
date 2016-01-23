@@ -1,10 +1,42 @@
 #include <iostream>
+#include <vector>
 #include <time.h>
 
 #include "sim.hh"
 #include "flyingmachine.hh"
 #include "./quadrotor/quad_gnc.hh"
 #include "./quadrotor/quad_sensors.hh"
+#include "./formation/distance_formation.hh"
+
+Eigen::VectorXf create_X_from_quads(std::vector<Quad_GNC*> *q, int m)
+{
+    Eigen::VectorXf X(m*q->size());
+
+    int i = 0;
+    for (std::vector<Quad_GNC*>::iterator it = q->begin();
+            it != q->end(); ++it){
+        Eigen::Vector3f X_i((*it)->get_X());
+        X.segment(m*i, m) = X_i.segment(0, m);
+        i++;
+    }
+
+    return X;
+}
+
+Eigen::VectorXf create_V_from_quads(std::vector<Quad_GNC*> *q, int m)
+{
+    Eigen::VectorXf V(m*q->size());
+
+    int i = 0;
+    for (std::vector<Quad_GNC*>::iterator it = q->begin();
+            it != q->end(); ++it){
+        Eigen::Vector3f V_i((*it)->get_V());
+        V.segment(m*i, m) = V_i.segment(0, m);
+        i++;
+    }
+
+    return V;
+}
 
 int main(int argc, char* argv[])
 {
@@ -41,72 +73,84 @@ int main(int argc, char* argv[])
     float k_xi_g_e_alt = 1e-1;
     float k_xi_CD_e_v = 1e-3;
 
-    std::string q1_ip("127.0.0.1");
-    int q1_udp_xplane_in = 50000;
-    int q1_udp_xplane_out = 60001;
+    int num_quads = 2;
 
-    Sim *q1_xp = new Sim(q1_ip, q1_udp_xplane_in, q1_udp_xplane_out, XPLANE);
-    Quad_Sensors *q1_sen = new Quad_Sensors(q1_xp);
-    Quad_GNC *q1_gnc = new Quad_GNC(q1_xp, q1_sen);
+    std::string q_ip("127.0.0.1");
+    int q_udp_xplane_in[2] = {50000, 51000};
+    int q_udp_xplane_out[2] = {60001, 61001};
 
-    q1_gnc->set_physical_variables(J, m, l);
-    q1_gnc->set_motor_model(kt, km);
-    q1_gnc->set_attitude_gains(kp, kq, kr);
+    std::vector<Flyingmachine> quads;
+    std::vector<Quad_GNC*> quads_gnc;
 
-    q1_gnc->set_control_gains(k_xy, k_vxy, k_vz, k_alt);
-    q1_gnc->set_xi_g_gains(k_xi_g_v, k_xi_g_e_alt);
-    q1_gnc->set_xi_CD_gains(k_xi_CD_e_v);
+    for(int i = 0; i < num_quads; i++){
+        Sim *q_xp = 
+            new Sim(q_ip, q_udp_xplane_in[i], q_udp_xplane_out[i], XPLANE);
+        Quad_Sensors *q_sen = new Quad_Sensors(q_xp);
+        Quad_GNC *q_gnc = new Quad_GNC(q_xp, q_sen);
 
-    Flyingmachine q1(q1_xp, dynamic_cast<Sensors*>(q1_sen),
-            dynamic_cast<GNC*>(q1_gnc));
+        q_gnc->set_physical_variables(J, m, l);
+        q_gnc->set_motor_model(kt, km);
+        q_gnc->set_attitude_gains(kp, kq, kr);
+        q_gnc->set_control_gains(k_xy, k_vxy, k_vz, k_alt);
+        q_gnc->set_xi_g_gains(k_xi_g_v, k_xi_g_e_alt);
+        q_gnc->set_xi_CD_gains(k_xi_CD_e_v);
 
-    q1_gnc->set_xyz_zero(0.824756, 0.198016, 576.5);
-    q1_gnc->set_yaw_d(M_PI/4);
-  //  q1_gnc->set_active_controller(XYZ);
-  //  q1_gnc->set_xyz(0, 0, -70);
-    
-  //  q1_gnc->set_active_controller(V_2D_ALT);
-  //  q1_gnc->set_v_2D_alt(0, 0, -600);
+        Flyingmachine q(q_xp, dynamic_cast<Sensors*>(q_sen),
+                dynamic_cast<GNC*>(q_gnc));
 
-    q1_gnc->set_active_controller(V_2D_ALT);
-    q1_gnc->set_v_2D_alt(2.5, 0, -600);
+        quads.push_back(q);
+        quads_gnc.push_back(q_gnc);
+    }
 
+    // Formation Control
+    int fcm = 2;
+    int fcl = 1;
+    float c_shape = 1e-2;
+    float c_vel = 1e-1;
+    Eigen::VectorXf fcd(1);
+    Eigen::VectorXf mu(1);
+    Eigen::VectorXf tilde_mu(1);
+    Eigen::MatrixXf B(2, 1);
+    B << 1,
+        -1;
+    fcd << 100;
+    mu << 0;
+    tilde_mu << 0;
+    DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel);
 
-    std::string q2_ip("127.0.0.1");
-    int q2_udp_xplane_in = 51000;
-    int q2_udp_xplane_out = 61001;
+    // Setting control
+    for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
+            it != quads_gnc.end(); ++it){
+        (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
+        (*it)->set_yaw_d(M_PI/4);
+        (*it)->set_active_controller(A_2D_ALT);
+        (*it)->set_a_2D_alt(0, 0, -600);
+    }
 
-    Sim *q2_xp = new Sim(q2_ip, q2_udp_xplane_in, q2_udp_xplane_out, XPLANE);
-    Quad_Sensors *q2_sen = new Quad_Sensors(q2_xp);
-    Quad_GNC *q2_gnc = new Quad_GNC(q2_xp, q2_sen);
-
-    q2_gnc->set_physical_variables(J, m, l);
-    q2_gnc->set_motor_model(kt, km);
-    q2_gnc->set_attitude_gains(kp, kq, kr);
-
-    q2_gnc->set_control_gains(k_xy, k_vxy, k_vz, k_alt);
-    q2_gnc->set_xi_g_gains(k_xi_g_v, k_xi_g_e_alt);
-    q2_gnc->set_xi_CD_gains(k_xi_CD_e_v);
-
-    Flyingmachine q2(q2_xp, dynamic_cast<Sensors*>(q2_sen),
-            dynamic_cast<GNC*>(q2_gnc));
-
-    q2_gnc->set_xyz_zero(0.824756, 0.198016, 576.5);
-    q2_gnc->set_yaw_d(M_PI/4);
-    q2_gnc->set_active_controller(A_2D_ALT);
-    q2_gnc->set_a_2D_alt(0, 0, -600);
 
     for(;;)
     {
         clock_gettime(CLOCK_REALTIME, &ts);
         last_step_time = ts.tv_nsec;
-
-        q1.update(time);
-     //   q2.update(time);
+        
+        for (std::vector<Flyingmachine>::iterator it = quads.begin();
+            it != quads.end(); ++it)
+            it->update(time);
 
         time += dt;
-     //   if(time >= 180e9)
-     //       break;
+        if(time >= 15e9)
+        {
+            Eigen::VectorXf X = create_X_from_quads(&quads_gnc, 2);
+            Eigen::VectorXf V = create_V_from_quads(&quads_gnc, 2);
+            Eigen::VectorXf U = df.get_u_acc(X, V);
+
+            int i = 0;
+            for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
+                    it != quads_gnc.end(); ++it){
+                (*it)->set_a_2D_alt(U(i*2), U(i*2+1), -600);
+                i++;
+            }
+        }
 
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);

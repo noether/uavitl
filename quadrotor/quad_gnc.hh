@@ -66,6 +66,8 @@ class Quad_GNC: public GNC{
         void set_active_controller(Controller);
 
         void update(long t);
+        Eigen::VectorXf get_X();
+        Eigen::VectorXf get_V();
 
         void navigation_update();
         void set_yaw_d(float);

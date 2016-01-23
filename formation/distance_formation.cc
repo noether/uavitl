@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <math.h>
-#include "rigid_control.hh"
+#include "distance_formation.hh"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <unsupported/Eigen/KroneckerProduct>
@@ -29,19 +29,19 @@ DistanceFormation::DistanceFormation(int m, int l, Eigen::VectorXf d,
     _make_S1_S2();
     _make_Av_Aa();
 
-    Eigen::MatrixXf I2(Eigen::MatrixXf::Identity(_m, _m));
-    Eigen::kroneckerProduct(_B, I2, _Bb);
-    Eigen::kroneckerProduct(_S1, I2, _S1b);
-    Eigen::kroneckerProduct(_S2, I2, _S2b);
-    Eigen::kroneckerProduct(_Av, I2, _Avb);
-    Eigen::kroneckerProduct(_Aa, I2, _Aab);
+    Eigen::MatrixXf Im(Eigen::MatrixXf::Identity(_m, _m));
+    _Bb = Eigen::kroneckerProduct(_B, Im);
+    _S1b = Eigen::kroneckerProduct(_S1, Im);
+    _S2b = Eigen::kroneckerProduct(_S2, Im);
+    _Avb = Eigen::kroneckerProduct(_Av, Im);
+    _Aab = Eigen::kroneckerProduct(_Aa, Im);
 }
 
 DistanceFormation::DistanceFormation()
 {
 }
 
-~DistanceFormation::DistanceFormatio()
+DistanceFormation::~DistanceFormation()
 {
 }
 
@@ -49,37 +49,37 @@ Eigen::VectorXf DistanceFormation::get_u_vel(Eigen::VectorXf X)
 {
     Eigen::VectorXf U(Eigen::VectorXf::Zero(X.rows()));
     Eigen::MatrixXf Z = _Bb.transpose()*X;
+
     if (_l == 1){
         Eigen::MatrixXf Dzh = _make_Dzh(Z);
         Eigen::VectorXf E = _make_E(Z);
-        Eigen::VectorXf U = -_c_shape*_Bb*Dzh*E + _Avb*Z;
+        U = -_c_shape*_Bb*Dzh*E + _Avb*Z;
     }
     else{
         Eigen::MatrixXf Dz = _make_Dz(Z);
         Eigen::MatrixXf Dzt = _make_Dzt(Z);
         Eigen::VectorXf E = _make_E(Z);
-        Eigen::VectorXf U = -_c_shape*_Bb*Dz*Dzt*E + _Avb*Z;
+        U = -_c_shape*_Bb*Dz*Dzt*E + _Avb*Z;
     }
 
     return U;
 }
 
-DistanceFormation::get_u_acc(Eigen::VectorXf X, Eigen::VectorXf V)
+Eigen::VectorXf DistanceFormation::get_u_acc(Eigen::VectorXf X, 
+        Eigen::VectorXf V)
 {
     Eigen::VectorXf U(Eigen::VectorXf::Zero(X.rows()));
     Eigen::MatrixXf Z = _Bb.transpose()*X;
     if (_l == 1){
         Eigen::MatrixXf Dzh = _make_Dzh(Z);
         Eigen::VectorXf E = _make_E(Z);
-        Eigen::VectorXf U = -_c_shape*_Bb*Dzh*E + _c_vel*_Avb*Z + _Aab*Z 
-            - _c_vel*V;
+        U = -_c_shape*_Bb*Dzh*E + _c_vel*_Avb*Z + _Aab*Z - _c_vel*V;
     }
     else{
         Eigen::MatrixXf Dz = _make_Dz(Z);
         Eigen::MatrixXf Dzt = _make_Dzt(Z);
         Eigen::VectorXf E = _make_E(Z);
-        Eigen::VectorXf U = -_c_shape*_Bb*Dz*Dzt*E + _c_vel*_Avb*Z + _Aab*Z
-            - _c_vel*V;
+        U = -_c_shape*_Bb*Dz*Dzt*E + _c_vel*_Avb*Z + _Aab*Z - _c_vel*V;
     }
 
     return U;
@@ -108,16 +108,16 @@ void DistanceFormation::_make_Av_Aa()
                 _Av(i, j) =  _tilde_mu(j);
         }
 
-   _Aa = _Av*B.transpose()*_Av;
+   _Aa = _Av*_B.transpose()*_Av;
 }
 
 Eigen::MatrixXf DistanceFormation::_make_Dz(Eigen::VectorXf Z)
 {
-    Eigen::MatrixXf Dz(Eigen::MatrixXf::Zero(z.rows(), _edges));
+    Eigen::MatrixXf Dz(Eigen::MatrixXf::Zero(Z.rows(), _edges));
     int i;
 
     for(i = 0; i < _edges; i++)
-        Dz.block<_m, 1>(i*_m, i) = Z.block<_m, 1>(i*_m, 0);
+        Dz.block(i*_m, i, _m, 1) = Z.segment(i*_m, _m);
 
     return Dz;
 }
@@ -125,39 +125,49 @@ Eigen::MatrixXf DistanceFormation::_make_Dz(Eigen::VectorXf Z)
 Eigen::MatrixXf DistanceFormation::_make_Dzt(Eigen::VectorXf Z)
 {
     if(_l == 2)
-        return Eigen::MatrixXf I2(Eigen::MatrixXf::Identity(_edges, _edges));
+        return Eigen::MatrixXf::Identity(_edges, _edges);
 
     Eigen::VectorXf Zt = Eigen::VectorXf::Zero(_edges);
     int i;
 
     for(i = 0; i < _edges; i++)
-        Zt(i) = pow(Z.block<_m, 1>(i*_m, 0).norm(), _l-2);
+        Zt(i) = pow(Z.segment(i*_m, _m).norm(), _l-2);
 
     return Zt.asDiagonal();
 }
 
 Eigen::MatrixXf DistanceFormation::_make_Dzh(Eigen::VectorXf Z)
 {
-    Eigen::MatrixXf Dzh(Eigen::MatrixXf::Zero(z.rows(), _edges));
+    Eigen::MatrixXf Dzh(Eigen::MatrixXf::Zero(Z.rows(), _edges));
     int i;
 
-    for(i = 0; i < _edges; i++)
-        Dz.block<_m, 1>(i*_m, i) = Z.block<_m, 1>(i*_m, 0).normalize();
+    for(i = 0; i < _edges; i++){
+        Eigen::VectorXf Zi = Z.segment(i*_m, _m);
+        Zi.normalize();
+        Dzh.block(i*_m, i, _m, 1) = Zi.segment(0, _m);
+    }
 
     return Dzh;
 }
 
-Eigen::MatrixXf DistanceFormation::_make_E(Eigen::VectorXf Z)
+Eigen::VectorXf DistanceFormation::_make_E(Eigen::VectorXf Z)
 {
-    Eigen::VectorXf E(Eigen::VectorXf::Zero(_edges);
+    Eigen::VectorXf E(Eigen::VectorXf::Zero(_edges));
     int i;
 
     if( _l == 1)
         for(i = 0; i < _edges; i++)
-            E(i) = Z.block<_m, 1>(i*_m, 0).norm() - _d(i);
+            E(i) = Z.segment(i*_m, _m).norm() - _d(i);
     else
         for(i = 0; i < _edges; i++)
-            E(i) = pow(Z.block<_m, 1>(i*_m, 0).norm(), _l) - pow(_d(i), _l);
+            E(i) = pow(Z.segment(i*_m, _m).norm(), _l) - pow(_d(i), _l);
 
+    std::cout << "E: " << E.transpose() << std::endl;
     return E;
+}
+
+void DistanceFormation::set_mus(Eigen::VectorXf mu, Eigen::VectorXf tilde_mu)
+{
+    _mu = mu;
+    _tilde_mu = tilde_mu;
 }

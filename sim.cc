@@ -70,7 +70,7 @@ int Sim::_readDatagram(){
 
     _datagram.resize(1000, 0);
     readBytes = _server.recv(&*_datagram.begin(), _datagram.size(), 0);
-    std::cout << "Read bytes: " << readBytes << std::endl;
+    //std::cout << "Read bytes: " << readBytes << std::endl;
     if (readBytes < 0)
         return readBytes;
     _datagram.resize(readBytes);
