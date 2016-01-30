@@ -7,6 +7,7 @@
 #include "./quadrotor/quad_gnc.hh"
 #include "./quadrotor/quad_sensors.hh"
 #include "./formation/distance_formation.hh"
+#include "./formation/position_formation.hh"
 
 Eigen::VectorXf create_X_from_quads(std::vector<Quad_GNC*> *q, int m)
 {
@@ -73,11 +74,11 @@ int main(int argc, char* argv[])
     float k_xi_g_e_alt = 1e-1;
     float k_xi_CD_e_v = 1e-3;
 
-    int num_quads = 2;
+    int num_quads = 3;
 
     std::string q_ip("127.0.0.1");
-    int q_udp_xplane_in[2] = {50000, 51000};
-    int q_udp_xplane_out[2] = {60001, 61001};
+    int q_udp_xplane_in[3] = {50000, 51000, 52000};
+    int q_udp_xplane_out[3] = {60001, 61001, 62001};
 
     std::vector<Flyingmachine> quads;
     std::vector<Quad_GNC*> quads_gnc;
@@ -105,18 +106,29 @@ int main(int argc, char* argv[])
     // Formation Control
     int fcm = 2;
     int fcl = 1;
-    float c_shape = 1e-2;
-    float c_vel = 1e-1;
-    Eigen::VectorXf fcd(1);
-    Eigen::VectorXf mu(1);
-    Eigen::VectorXf tilde_mu(1);
-    Eigen::MatrixXf B(2, 1);
-    B << 1,
-        -1;
-    fcd << 100;
-    mu << 0;
-    tilde_mu << 0;
+    float c_shape = 5e-2;
+    float c_vel = 2e-1;
+    Eigen::VectorXf fcd(3);
+    Eigen::VectorXf mu(3);
+    Eigen::VectorXf tilde_mu(3);
+    Eigen::MatrixXf B(3, 3);
+    B << 1,  0, -1,
+        -1,  1,  0,
+         0, -1,  1;
+
+    fcd << 100, 100, 100;
+    mu << 0, 0, 0;
+    tilde_mu << 0, 0, 0;
     DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel);
+
+    Eigen::VectorXf zd(6);
+    Eigen::MatrixXf Bp(3, 3);
+    Bp << 1, 0, 0,
+         -1, 0, 0,
+          0, 0, 0;
+    zd << 100, 0, 0, 0, 0, 0;
+    PositionFormation pf(fcm, zd, Bp, c_shape, c_vel);
+
 
     // Setting control
     for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
@@ -142,7 +154,11 @@ int main(int argc, char* argv[])
         {
             Eigen::VectorXf X = create_X_from_quads(&quads_gnc, 2);
             Eigen::VectorXf V = create_V_from_quads(&quads_gnc, 2);
-            Eigen::VectorXf U = df.get_u_acc(X, V);
+
+            Eigen::VectorXf Us = df.get_u_acc(X, V);
+            Eigen::VectorXf Up = pf.get_u_acc(X, V);
+
+            Eigen::VectorXf U = Us + Up;
 
             int i = 0;
             for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
