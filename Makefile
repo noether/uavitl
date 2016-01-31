@@ -31,6 +31,7 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(QUAD_PATH)quad_sensors.o \
 				 $(FORMATION_PATH)distance_formation.o \
 				 $(FORMATION_PATH)position_formation.o \
+				 $(FORMATION_PATH)bearing_formation.o \
 				 uavitl.o
 
 all: uavitl

@@ -144,7 +144,8 @@ Eigen::MatrixXf DistanceFormation::_make_Dzh(Eigen::VectorXf Z)
     for(i = 0; i < _edges; i++){
         Eigen::VectorXf Zi = Z.segment(i*_m, _m);
         Zi.normalize();
-        Dzh.block(i*_m, i, _m, 1) = Zi.segment(0, _m);
+        if(!isnan(Zi(0)))
+            Dzh.block(i*_m, i, _m, 1) = Zi.segment(0, _m);
     }
 
     return Dzh;

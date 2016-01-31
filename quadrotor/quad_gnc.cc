@@ -223,9 +223,6 @@ void Quad_GNC::navigation_update()
     
     // XYZ estimation wrt Ground Station
     _xyz_wrt_xyz_zero(coord[0], coord[1], coord[2]);
-    //std::cout << "Lat: " << coord[0] << " Lon: " << coord[1] << 
-    //    " Alt: " << coord[2] << std::endl;
-    std::cout << "XYZ: " << _x << " " << _y << " " << _z << std::endl;
 }
 
 void Quad_GNC::set_yaw_d(float yaw_d)
@@ -294,18 +291,10 @@ void Quad_GNC::control_att_lya(float phi_d, float the_d, float yaw_d,
     float ethe = _pitch - the_d;
     float epsi = _yaw - yaw_d;
 
-    //std::cout << "Error roll: " << ephi << std::endl;
-    //std::cout << "Error pitch: " << ethe << std::endl;
-    //std::cout << "Error yaw: " << epsi << std::endl;
-
     // Desired moments
     float l_d = -Jxx*(100*ephi + _kp*_p) - (Jyy-Jzz)*_q*_r;
     float m_d = -Jyy*(100*ethe + _kq*_q) - (Jzz-Jxx)*_r*_p;
     float n_d = -Jzz*(10*epsi + _kr*_r);
-
-    //std::cout << "Desired l: " << l_d << std::endl;
-    //std::cout << "Desired m: " << m_d << std::endl;
-    //std::cout << "Desired n: " << n_d << std::endl;
 
     // Desired angular velocities for the motors
     Eigen::Vector4f Tlmn_d;
@@ -318,7 +307,6 @@ void Quad_GNC::control_att_lya(float phi_d, float the_d, float yaw_d,
     
     int i;
     for (i = 0; i < 4; i++){
-        //std::cout << "U(" << i <<") = " << u(i) << std::endl;
         if (u(i) > 1)
             u(i) = 1;
         else if (u(i) < 0)
@@ -337,12 +325,6 @@ void Quad_GNC::control_xyz_ned_lya()
     float ez = _z - _z_d;
 
     _e_alt = ez; // For the gravity estimator
-
-    std::cout << "Error X: " << ex << std::endl;
-    std::cout << "Error Y: " << ey << std::endl;
-    std::cout << "Error Z: " << ez << std::endl;
- 
-    std::cout << "xi_g: " << _xi_g << std::endl;
 
     // Desired accelerations
     float ax_d = -_k_xy*ex -_k_vxy*_vn;
@@ -364,17 +346,9 @@ void Quad_GNC::control_v_2D_alt_lya()
     float e_vx = _vn - _vn_d;
     float e_vy = _ve - _ve_d;
 
-    // std::cout << "Error altitude: " << e_alt << std::endl;
-
     _e_alt = e_alt; // For the gravity estimator
     _e_vx = e_vx;  // For the CD estimation
     _e_vy = e_vy;  // For the CD estimation
-
-    // std::cout << "Error Vx: " << _e_vx << std::endl;
-    // std::cout << "Error Vy: " << _e_vy << std::endl;
-
-    // std::cout << "xi_g: " << _xi_g << std::endl;
-    // std::cout << "xi_CD: " << _xi_CD << std::endl;
 
     // Desired accelerations
     float v_norm = sqrt(_vn*_vn + _ve*_ve);
@@ -382,19 +356,12 @@ void Quad_GNC::control_v_2D_alt_lya()
     float ay_d = _xi_CD*v_norm*_ve - _k_vxy*e_vy;
     float az_d = -_xi_g - _k_alt*e_alt - _k_vz*_vd;
 
-    //std::cout << "Desired ax: " << ax_d << std::endl;
-    //std::cout << "Desired ay: " << ay_d << std::endl;
-    //std::cout << "Desired az: " << az_d << std::endl;
 
     // Desired attitude and thrust
     float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
     float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
     float T_d = az_d*_m;
 
-    //std::cout << "Desired roll: " << phi_d << std::endl;
-    //std::cout << "Desired pitch: " << the_d << std::endl;
-    //std::cout << "Desired yaw: " << _yaw_d << std::endl;
-    //std::cout << "Desired thrust: " << T_d << std::endl;
 
     control_att_lya(phi_d, the_d, _yaw_d, T_d);
 }
@@ -404,8 +371,6 @@ void Quad_GNC::control_a_2D_alt_lya()
     // Control errors
     float e_alt = -_alt - _alt_d;
 
-    //std::cout << "Error altitude: " << e_alt << std::endl;
-
     _e_alt = e_alt; // For the gravity estimator
 
     // Desired accelerations
@@ -413,17 +378,12 @@ void Quad_GNC::control_a_2D_alt_lya()
     float ay_d = _ae_d;
     float az_d = -_xi_g  - _k_alt*e_alt - _k_vz*_vd;
 
-    std::cout << "xi_g: " << _xi_g << std::endl;
 
     // Desired attitude and thrust
     float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
     float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
     float T_d = az_d*_m;
 
-    //std::cout << "Desired roll: " << phi_d << std::endl;
-    //std::cout << "Desired pitch: " << the_d << std::endl;
-    //std::cout << "Desired yaw: " << _yaw_d << std::endl;
-    //std::cout << "Desired thrust: " << T_d << std::endl;
 
     control_att_lya(phi_d, the_d, _yaw_d, T_d);
 }
