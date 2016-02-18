@@ -1,9 +1,11 @@
-LIBS_PATH = -I/usr/include/eigen3
+LIBS_PATH = -I/usr/include/eigen3 -I/usr/include/boost
 COMM_PATH = ./comm/
 XPLANE_PATH = ./XPlane/
 ENVIRONMENT_PATH = ./environment/
 QUAD_PATH = ./quadrotor/
 FORMATION_PATH = ./formation/
+
+LDFLAGS = -lm -lboost_filesystem -lboost_system
 
 CXX = g++-5
 CXXFLAGS=-std=c++11 -Wall -Wextra -O2 -ggdb3 $(LIBS_PATH)
@@ -37,7 +39,7 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 all: uavitl
 
 uavitl: $(OBJECTS_UAVITL)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS_PATH)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS_PATH) $(LDFLAGS)
 
 clean:
 	$(RM) *~ *.o *.swp uavitl \

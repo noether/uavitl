@@ -1,10 +1,15 @@
+#include <boost/filesystem.hpp>
+#include <iostream>
+#include <fstream>
+#include <time.h>
+#include <string>
 #include "Eigen/Core"
 #include "Eigen/LU"
 #include "quad_gnc.hh"
 #include "../sim.hh"
 
 Quad_GNC::Quad_GNC():
-    GNC(NULL),
+    GNC(-1, NULL),
     _sen(NULL),
     _roll(-999), _pitch(-999), _yaw(-999),
     _ax(-999), _ay(-999), _az(-999),
@@ -42,8 +47,8 @@ Quad_GNC::Quad_GNC():
     _e = sqrtf(_a*_a - _b*_b) / _a;
 }
 
-Quad_GNC::Quad_GNC(Sim *sim, Quad_Sensors *sen):
-    GNC(sim),
+Quad_GNC::Quad_GNC(int id, Sim *sim, Quad_Sensors *sen):
+    GNC(id, sim),
     _sen(sen),
     _roll(-999), _pitch(-999), _yaw(-999),
     _ax(-999), _ay(-999), _az(-999),
@@ -79,6 +84,26 @@ Quad_GNC::Quad_GNC(Sim *sim, Quad_Sensors *sen):
     _a = 6378137.0;
     _b = 6356752;
     _e = sqrtf(_a*_a - _b*_b) / _a;
+
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer [80];
+
+    time (&rawtime);
+    timeinfo = localtime (&rawtime);
+    strftime (buffer, 80, "%F-%H%M", timeinfo);
+    std::string dir_path("./log/");
+    dir_path.append(buffer);
+
+    boost::filesystem::path dir(dir_path.c_str());
+    if(!boost::filesystem::is_directory(dir))
+        boost::filesystem::create_directory(dir);
+
+    dir_path.append("/log_gnc_");
+    dir_path.append(std::to_string(_id));
+    dir_path.append(".txt");
+
+    _log.open(dir_path);
 }
 
 Quad_GNC::~Quad_GNC()
@@ -187,6 +212,20 @@ Eigen::VectorXf Quad_GNC::get_V()
     return V;
 }
 
+Eigen::VectorXf Quad_GNC::get_attitude()
+{
+    Eigen::VectorXf att(3);
+    att << _roll, _pitch, _yaw;
+    return att;
+}
+
+Eigen::VectorXf Quad_GNC::get_gps()
+{
+    Eigen::VectorXf gps(3);
+    gps << _lon, _lat, _alt;
+    return gps;
+}
+
 void Quad_GNC::navigation_update()
 {
     // Attitude estimation
@@ -219,10 +258,12 @@ void Quad_GNC::navigation_update()
     // Altitude (msl)
     float coord[3];
     _sen->get_gps_coord(coord);
+    _lat = coord[0];
+    _lon = coord[1];
     _alt = coord[2];
     
     // XYZ estimation wrt Ground Station
-    _xyz_wrt_xyz_zero(coord[0], coord[1], coord[2]);
+    _xyz_wrt_xyz_zero(_lat, _lon, _alt);
 }
 
 void Quad_GNC::set_yaw_d(float yaw_d)
@@ -437,4 +478,11 @@ void Quad_GNC::_xyz_wrt_xyz_zero(float lat, float lon, float alt)
     _x = X(0);
     _y = X(1);
     _z = X(2);
+}
+
+void Quad_GNC::log(float t)
+{
+    _log << t << " " << get_X().transpose() << " " << get_V().transpose() 
+        << " " << get_attitude().transpose() << " " << get_gps().transpose() 
+        << std::endl;
 }

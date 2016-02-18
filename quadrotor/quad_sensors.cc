@@ -2,12 +2,12 @@
 #include "../sim.hh"
 
 Quad_Sensors::Quad_Sensors():
-    Sensors(NULL)
+    Sensors(-1, NULL)
 {
 }
 
-Quad_Sensors::Quad_Sensors(Sim *s):
-    Sensors(s)
+Quad_Sensors::Quad_Sensors(int id, Sim *s):
+    Sensors(id, s)
 {
 }
 

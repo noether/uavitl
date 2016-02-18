@@ -75,11 +75,11 @@ int main(int argc, char* argv[])
     float k_xi_g_e_alt = 1e-1;
     float k_xi_CD_e_v = 1e-3;
 
-    int num_quads = 3;
+    int num_quads = 4;
 
     std::string q_ip("127.0.0.1");
-    int q_udp_xplane_in[3] = {50000, 51000, 52000};
-    int q_udp_xplane_out[3] = {60001, 61001, 62001};
+    int q_udp_xplane_in[4] = {50000, 51000, 52000, 53000};
+    int q_udp_xplane_out[4] = {60001, 61001, 62001, 63001};
 
     std::vector<Flyingmachine> quads;
     std::vector<Quad_GNC*> quads_gnc;
@@ -87,8 +87,8 @@ int main(int argc, char* argv[])
     for(int i = 0; i < num_quads; i++){
         Sim *q_xp = 
             new Sim(q_ip, q_udp_xplane_in[i], q_udp_xplane_out[i], XPLANE);
-        Quad_Sensors *q_sen = new Quad_Sensors(q_xp);
-        Quad_GNC *q_gnc = new Quad_GNC(q_xp, q_sen);
+        Quad_Sensors *q_sen = new Quad_Sensors(i+1, q_xp);
+        Quad_GNC *q_gnc = new Quad_GNC(i+1, q_xp, q_sen);
 
         q_gnc->set_physical_variables(J, m, l);
         q_gnc->set_motor_model(kt, km);
@@ -108,19 +108,22 @@ int main(int argc, char* argv[])
     // Distance-based
     int fcm = 2;
     int fcl = 1;
-    float c_shape = 5e-2;
-    float c_vel = 2e-1;
-    Eigen::VectorXf fcd(3);
-    Eigen::VectorXf mu(3);
-    Eigen::VectorXf tilde_mu(3);
-    Eigen::MatrixXf B(3, 3);
-    B << 1,  0, -1,
-        -1,  1,  0,
-         0, -1,  1;
+    float c_shape = 1e-2;
+    float c_vel = 2e-2;
+    Eigen::VectorXf fcd(5);
+    Eigen::VectorXf mu(5);
+    Eigen::VectorXf tilde_mu(5);
+    Eigen::MatrixXf B(4, 5);
+    B << 1,  0, -1,  0,  0,
+        -1,  1,  0, -1,  0,
+         0, -1,  1,  0, -1,
+         0,  0,  0,  1,  1;
 
-    fcd << 100, 100, 100;
-    mu << 0, 0, 0;
-    tilde_mu << 0, 0, 0;
+    float a = 50;
+    float gamma = 0.034;
+    fcd << sqrt(2)*a, a, a, sqrt(2)*a, a;
+    mu << 0, 0, 0, -2*a*gamma*sqrt(2), 2*a*gamma;
+    tilde_mu << 0, a*gamma, 0, -a*gamma*sqrt(2), 0;
     DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel);
 
     // Distance-based only for 1-2
@@ -154,10 +157,12 @@ int main(int argc, char* argv[])
             it != quads_gnc.end(); ++it){
         (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
         (*it)->set_yaw_d(M_PI/4);
-        (*it)->set_active_controller(A_2D_ALT);
-        (*it)->set_a_2D_alt(0, 0, -600);
+        (*it)->set_active_controller(V_2D_ALT);
+        (*it)->set_v_2D_alt(0, 0, -600);
     }
 
+    quads_gnc.at(0)->set_active_controller(V_2D_ALT);
+    quads_gnc.at(0)->set_v_2D_alt(0, -1, -600);
 
     for(;;)
     {
@@ -165,29 +170,35 @@ int main(int argc, char* argv[])
         last_step_time = ts.tv_nsec;
         
         for (std::vector<Flyingmachine>::iterator it = quads.begin();
-            it != quads.end(); ++it)
+                it != quads.end(); ++it)
             it->update(time);
 
         time += dt;
+
+        Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
+        Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
+        Eigen::VectorXf Us = df.get_u_vel(X);
+        Eigen::VectorXf V_hat = Eigen::VectorXf::Zero(num_quads*fcm);
         if(time >= 15e9)
-        {
-            Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
-            Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
+            V_hat = df.get_v_hat(X, dt*1e-9);
+        //Eigen::VectorXf Upr = pfr.get_u_acc(X, V);
+        //Eigen::VectorXf Usr = dfr.get_u_acc(X, V);
+        //Eigen::VectorXf Ub = bf.get_u_acc(X, V);
 
-            //Eigen::VectorXf Us = df.get_u_acc(X, V);
-            //Eigen::VectorXf Upr = pfr.get_u_acc(X, V);
-            Eigen::VectorXf Usr = dfr.get_u_acc(X, V);
-            Eigen::VectorXf Ub = bf.get_u_acc(X, V);
-
-            Eigen::VectorXf U = Ub + Usr;
-
-            int i = 0;
-            for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
-                    it != quads_gnc.end(); ++it){
-                (*it)->set_a_2D_alt(U(i*2), U(i*2+1), -600);
-                i++;
+        Eigen::VectorXf U = Us + V_hat;
+       
+        int i = 0;
+        for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
+                it != quads_gnc.end(); ++it){
+            if( (i > 0) && (time >= 15e9)){
+                (*it)->set_v_2D_alt(U(i*2), U(i*2+1), -600);
             }
+            (*it)->log(time*1e-9);
+            i++;
         }
+
+        if(time >= 15e9)
+            df.log(time*1e-9, X);
 
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);

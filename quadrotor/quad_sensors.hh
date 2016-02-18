@@ -15,7 +15,7 @@ class Quad_Sensors: public Sensors{
         float _spres;
 
     public:
-        Quad_Sensors(Sim *);
+        Quad_Sensors(int, Sim *);
         Quad_Sensors();
         ~Quad_Sensors();
 

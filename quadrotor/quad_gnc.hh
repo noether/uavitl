@@ -1,6 +1,8 @@
 #ifndef QUAD_GNC_HH
 #define QUAD_GNC_HH 1
 
+#include <iostream>
+#include <fstream>
 #include "../gnc.hh"
 #include "../sim.hh"
 #include "quad_sensors.hh"
@@ -21,7 +23,7 @@ class Quad_GNC: public GNC{
         float _ax, _ay, _az;
         float _vn, _ve, _vd;
         float _x, _y, _z;
-        float _alt;
+        float _lat, _lon, _alt;
         float _p, _q, _r;
         Eigen::Matrix3f _J;
         float _m, _l;
@@ -51,8 +53,11 @@ class Quad_GNC: public GNC{
         // Math
         float _a, _b, _e;
 
+        // Log
+        std::ofstream _log;
+
     public:
-        Quad_GNC(Sim *, Quad_Sensors *);
+        Quad_GNC(int, Sim *, Quad_Sensors *);
         Quad_GNC();
         ~Quad_GNC();
 
@@ -68,6 +73,8 @@ class Quad_GNC: public GNC{
         void update(long t);
         Eigen::VectorXf get_X();
         Eigen::VectorXf get_V();
+        Eigen::VectorXf get_attitude();
+        Eigen::VectorXf get_gps();
 
         void navigation_update();
         void set_yaw_d(float);
@@ -85,6 +92,7 @@ class Quad_GNC: public GNC{
         void step_estimator_xi_g(float);
         void step_estimator_xi_CD(float);
 
+        void log(float);
 };
 
 #endif

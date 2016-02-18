@@ -8,10 +8,11 @@
 class Sensors
 {
     protected:
+        int _id;
         Sim * _sim;
 
     public:
-        Sensors(Sim *);
+        Sensors(int, Sim *);
         Sensors();
         ~Sensors();
 

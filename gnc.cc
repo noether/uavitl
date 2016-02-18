@@ -5,7 +5,8 @@ GNC::GNC():
 {
 }
 
-GNC::GNC(Sim *sim):
+GNC::GNC(int id, Sim *sim):
+    _id(id),
     _sim(sim)
 {
 }

@@ -5,10 +5,11 @@
 
 class GNC{
     protected:
+        int _id;
         Sim *_sim;
 
     public:
-        GNC(Sim *);
+        GNC(int, Sim *);
         GNC();
         ~GNC();
 

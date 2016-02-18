@@ -7,7 +7,8 @@ Sensors::Sensors():
 {
 }
 
-Sensors::Sensors(Sim *sim):
+Sensors::Sensors(int id, Sim *sim):
+    _id(id),
     _sim(sim)
 {
 }
