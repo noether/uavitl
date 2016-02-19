@@ -91,6 +91,8 @@ class Quad_GNC: public GNC{
         void control_a_ned();
         void step_estimator_xi_g(float);
         void step_estimator_xi_CD(float);
+        float get_xi_g();
+        float get_xi_CD();
 
         void log(float);
 };

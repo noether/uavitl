@@ -451,6 +451,11 @@ void Quad_GNC::step_estimator_xi_g(float dt)
     _xi_g = _xi_g + (_k_xi_g_v*_vd + _k_xi_g_e_alt*_e_alt)*dt;
 }
 
+float Quad_GNC::get_xi_g(void)
+{
+    return _xi_g;
+}
+
 void Quad_GNC::step_estimator_xi_CD(float dt)
 {
     // Euler integration
@@ -458,6 +463,12 @@ void Quad_GNC::step_estimator_xi_CD(float dt)
     float v_norm = sqrt(_vn*_vn + _ve*_ve);
     _xi_CD = _xi_CD - (_k_xi_CD_e_v*v_norm*(_e_vx*_vn + _e_vy*_ve))*dt;
 }
+
+float Quad_GNC::get_xi_CD(void)
+{
+    return _xi_CD;
+}
+
 
 void Quad_GNC::_xyz_wrt_xyz_zero(float lat, float lon, float alt)
 {
@@ -484,5 +495,5 @@ void Quad_GNC::log(float t)
 {
     _log << t << " " << get_X().transpose() << " " << get_V().transpose() 
         << " " << get_attitude().transpose() << " " << get_gps().transpose() 
-        << std::endl;
+        << " " << get_xi_g() << " " << get_xi_CD() << std::endl;
 }

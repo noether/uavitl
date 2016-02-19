@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     float k_xi_g_e_alt = 1e-1;
     float k_xi_CD_e_v = 1e-3;
 
-    int num_quads = 4;
+    int num_quads = 1;
 
     std::string q_ip("127.0.0.1");
     int q_udp_xplane_in[4] = {50000, 51000, 52000, 53000};
@@ -164,6 +164,10 @@ int main(int argc, char* argv[])
     quads_gnc.at(0)->set_active_controller(V_2D_ALT);
     quads_gnc.at(0)->set_v_2D_alt(0, -1, -600);
 
+    quads_gnc.at(0)->set_active_controller(XYZ);
+    quads_gnc.at(0)->set_xyz(5, -3, -20);
+
+
     for(;;)
     {
         clock_gettime(CLOCK_REALTIME, &ts);
@@ -175,30 +179,29 @@ int main(int argc, char* argv[])
 
         time += dt;
 
+#if 0
         Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
         Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
         Eigen::VectorXf Us = df.get_u_vel(X);
         Eigen::VectorXf V_hat = Eigen::VectorXf::Zero(num_quads*fcm);
         if(time >= 15e9)
             V_hat = df.get_v_hat(X, dt*1e-9);
-        //Eigen::VectorXf Upr = pfr.get_u_acc(X, V);
-        //Eigen::VectorXf Usr = dfr.get_u_acc(X, V);
-        //Eigen::VectorXf Ub = bf.get_u_acc(X, V);
 
         Eigen::VectorXf U = Us + V_hat;
+#endif
        
         int i = 0;
         for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
                 it != quads_gnc.end(); ++it){
-            if( (i > 0) && (time >= 15e9)){
-                (*it)->set_v_2D_alt(U(i*2), U(i*2+1), -600);
-            }
+ //           if( (i > 0) && (time >= 15e9)){
+ //               (*it)->set_v_2D_alt(U(i*2), U(i*2+1), -600);
+ //           }
             (*it)->log(time*1e-9);
             i++;
         }
 
-        if(time >= 15e9)
-            df.log(time*1e-9, X);
+ //       if(time >= 15e9)
+ //           df.log(time*1e-9, X);
 
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);
