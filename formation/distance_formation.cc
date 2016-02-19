@@ -245,7 +245,7 @@ Eigen::VectorXf DistanceFormation::get_v_hat(Eigen::VectorXf X, float dt)
     return _v_hat;
 }
 
-void DistanceFormation::log(float t, Eigen::VectorXf X)
+void DistanceFormation::log_1st(float t, Eigen::VectorXf X)
 {
     Eigen::VectorXf Z = _Bb.transpose()*X;
     Eigen::MatrixXf Dzh = _make_Dzh(Z);
@@ -277,4 +277,18 @@ void DistanceFormation::log(float t, Eigen::VectorXf X)
        E.transpose() << " " << _v_hat.transpose() << " " << 
        U.transpose() << " " << w2.norm() << " " << 2*w3.norm() << " " 
        << " " << w4.norm() << std::endl;
+}
+
+void DistanceFormation::log_2nd(float t, Eigen::VectorXf X, Eigen::VectorXf V)
+{
+    Eigen::VectorXf Z = _Bb.transpose()*X;
+    Eigen::MatrixXf Dzh = _make_Dzh(Z);
+    Eigen::VectorXf E = _make_E(Z);
+    Eigen::VectorXf Zh = _make_Zh(Z);
+    Eigen::VectorXf U = -_c_shape*_Bb*Dzh*E + _c_vel*_Avb*Zh + _Aab*Zh
+        - _c_vel*V;
+
+   _log << t << " " << X.transpose() << " " << Z.transpose() << " " <<
+       E.transpose() << " " << _v_hat.transpose() << " " << 
+       U.transpose() << " " << std::endl;
 }

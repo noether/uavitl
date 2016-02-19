@@ -75,6 +75,7 @@ class Quad_GNC: public GNC{
         Eigen::VectorXf get_V();
         Eigen::VectorXf get_attitude();
         Eigen::VectorXf get_gps();
+        Eigen::VectorXf get_acc();
 
         void navigation_update();
         void set_yaw_d(float);

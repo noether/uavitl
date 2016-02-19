@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
         }
 
  //       if(time >= 15e9)
- //           df.log(time*1e-9, X);
+ //           df.log_1st(time*1e-9, X);
 
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);

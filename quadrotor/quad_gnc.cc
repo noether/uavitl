@@ -226,6 +226,13 @@ Eigen::VectorXf Quad_GNC::get_gps()
     return gps;
 }
 
+Eigen::VectorXf Quad_GNC::get_acc()
+{
+    Eigen::VectorXf acc(3);
+    acc << _ax, _ay, _az;
+    return acc;
+}
+
 void Quad_GNC::navigation_update()
 {
     // Attitude estimation
@@ -495,5 +502,6 @@ void Quad_GNC::log(float t)
 {
     _log << t << " " << get_X().transpose() << " " << get_V().transpose() 
         << " " << get_attitude().transpose() << " " << get_gps().transpose() 
-        << " " << get_xi_g() << " " << get_xi_CD() << std::endl;
+        << " " << get_xi_g() << " " << get_xi_CD()
+        << " " << get_acc() << std::endl;
 }

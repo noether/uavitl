@@ -56,7 +56,8 @@ class DistanceFormation
         Eigen::VectorXf get_u_vel(Eigen::VectorXf);
         Eigen::VectorXf get_v_hat(Eigen::VectorXf, float);
 
-        void log(float, Eigen::VectorXf);
+        void log_1st(float, Eigen::VectorXf);
+        void log_2nd(float, Eigen::VectorXf, Eigen::VectorXf);
 };
 
 #endif // DISTANCE_FORMATION_HH
