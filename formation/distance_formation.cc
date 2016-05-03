@@ -12,7 +12,7 @@
 DistanceFormation::DistanceFormation(int m, int l, Eigen::VectorXf d,
         Eigen::VectorXf mu, Eigen::VectorXf tilde_mu,
         Eigen::MatrixXf B,
-        float c_shape, float c_vel):
+        float c_shape, float c_vel, float k_v_hat, float k_mu_hat):
     _m(m),
     _l(l),
     _B(B),
@@ -20,7 +20,9 @@ DistanceFormation::DistanceFormation(int m, int l, Eigen::VectorXf d,
     _mu(mu),
     _tilde_mu(tilde_mu),
     _c_shape(c_shape),
-    _c_vel(c_vel)
+    _c_vel(c_vel),
+    _k_v_hat(k_v_hat),
+    _k_mu_hat(k_mu_hat)
 {
     _agents = B.rows();
     _edges = B.cols();
@@ -28,7 +30,12 @@ DistanceFormation::DistanceFormation(int m, int l, Eigen::VectorXf d,
     _Bd.row(0).setZero();
 
     _v_hat = Eigen::VectorXf::Zero(_agents*_m);
-    _v_hat(1) = -1;
+    _mu_hat = Eigen::VectorXf::Zero(_edges);
+    _X = Eigen::VectorXf::Zero(_agents*_m);
+    _Z = Eigen::VectorXf::Zero(_edges*_m);
+    _E = Eigen::VectorXf::Zero(_edges);
+    _V = Eigen::VectorXf::Zero(_agents*_m);
+    _U = Eigen::VectorXf::Zero(_agents*_m);
 
     _S1 = Eigen::MatrixXf::Zero(_agents, _edges);
     _S2 = Eigen::MatrixXf::Zero(_agents, _edges);
@@ -59,7 +66,7 @@ DistanceFormation::DistanceFormation(int m, int l, Eigen::VectorXf d,
     if(!boost::filesystem::is_directory(dir))
         boost::filesystem::create_directory(dir);
 
-    dir_path.append("/log_formation.txt");
+    dir_path.append("/log_dis_for.txt");
 
     _log.open(dir_path);
 }
@@ -74,53 +81,53 @@ DistanceFormation::~DistanceFormation()
 
 Eigen::VectorXf DistanceFormation::get_u_vel(Eigen::VectorXf X)
 {
-    Eigen::VectorXf U(Eigen::VectorXf::Zero(X.rows()));
-    Eigen::VectorXf Z = _Bb.transpose()*X;
+    _X = X;
+    _Z = _Bb.transpose()*_X;
 
     if (_l == 1){
-        Eigen::MatrixXf Dzh = _make_Dzh(Z);
-        Eigen::VectorXf Zh = _make_Zh(Z);
-        Eigen::VectorXf E = _make_E(Z);
-        U = -_c_shape*_Bb*Dzh*E + _Avb*Zh;
+        Eigen::MatrixXf Dzh = _make_Dzh(_Z);
+        Eigen::VectorXf Zh = _make_Zh(_Z);
+        _E = _make_E(_Z);
+        _U = -_c_shape*_Bb*Dzh*_E + _Avb*Zh;
 
-        std::cout << "E: " << E.transpose() << std::endl;
-        if(E.norm() < 100)
-            _c_shape = 8e-2;
     }
     else{
-        Eigen::MatrixXf Dz = _make_Dz(Z);
-        Eigen::MatrixXf Dzt = _make_Dzt(Z);
+        Eigen::MatrixXf Dz = _make_Dz(_Z);
+        Eigen::MatrixXf Dzt = _make_Dzt(_Z);
         Eigen::MatrixXf Im(Eigen::MatrixXf::Identity(_m, _m));
         Eigen::MatrixXf Dztb = Eigen::kroneckerProduct(Dzt, Im);
-        Eigen::VectorXf E = _make_E(Z);
-        U = -_c_shape*_Bb*Dz*Dzt*E + _Avb*Dztb*Z;
+        Eigen::VectorXf _E = _make_E(_Z);
+        _U = -_c_shape*_Bb*Dz*Dzt*_E + _Avb*Dztb*_Z;
     }
 
-    return U;
+    return _U;
 }
 
 Eigen::VectorXf DistanceFormation::get_u_acc(Eigen::VectorXf X, 
         Eigen::VectorXf V)
 {
-    Eigen::VectorXf U(Eigen::VectorXf::Zero(X.rows()));
-    Eigen::VectorXf Z = _Bb.transpose()*X;
+    _X = X;
+    _V = V;
+    _Z = _Bb.transpose()*_X;
+
     if (_l == 1){
-        Eigen::MatrixXf Dzh = _make_Dzh(Z);
-        Eigen::VectorXf Zh = _make_Zh(Z);
-        Eigen::VectorXf E = _make_E(Z);
-        U = -_c_shape*_Bb*Dzh*E + _c_vel*_Avb*Zh + _Aab*Zh - _c_vel*V;
+        Eigen::MatrixXf Dzh = _make_Dzh(_Z);
+        Eigen::VectorXf Zh = _make_Zh(_Z);
+        _E = _make_E(_Z);
+    //    _U = -_c_shape*_Bb*Dzh*_E + _c_vel*_Avb*Zh + _Aab*Zh - _c_vel*_V;
+        _U = -_c_shape*_Bb*Dzh*_E +_S1b*Dzh*(_mu-_mu_hat) - _c_vel*_V;
     }
     else{
-        Eigen::MatrixXf Dz = _make_Dz(Z);
-        Eigen::MatrixXf Dzt = _make_Dzt(Z);
+        Eigen::MatrixXf Dz = _make_Dz(_Z);
+        Eigen::MatrixXf Dzt = _make_Dzt(_Z);
         Eigen::MatrixXf Im(Eigen::MatrixXf::Identity(_m, _m));
         Eigen::MatrixXf Dztb = Eigen::kroneckerProduct(Dzt, Im);
-        Eigen::VectorXf E = _make_E(Z);
+        _E = _make_E(_Z);
  //       U = -_c_shape*_Bb*Dz*Dzt*E + _c_vel*_Avb*Dztb*Z + _Aab*Dztb*Z - _c_vel*V;
-        U = -_c_shape*_Bb*Dz*E + _c_vel*_Avb*Z + _Aab*Z - _c_vel*V;
+        _U = -_c_shape*_Bb*Dz*_E + _c_vel*_Avb*_Z + _Aab*_Z - _c_vel*_V;
     }
 
-    return U;
+    return _U;
 }
 
 void DistanceFormation::_make_S1_S2()
@@ -226,69 +233,97 @@ void DistanceFormation::set_mus(Eigen::VectorXf mu, Eigen::VectorXf tilde_mu)
     _tilde_mu = tilde_mu;
 }
 
-Eigen::VectorXf DistanceFormation::get_v_hat(Eigen::VectorXf X, float dt)
+void DistanceFormation::set_c_shape(float c)
+{
+    _c_shape = c;
+}
+
+void DistanceFormation::set_c_vel(float c)
+{
+    _c_vel = c;
+}
+
+void DistanceFormation::set_k_v_hat(float k)
+{
+    _k_v_hat = k;
+}
+
+void DistanceFormation::update_v_hat(Eigen::VectorXf X, float dt)
 {
     Eigen::VectorXf Z = _Bb.transpose()*X;
     Eigen::MatrixXf Dzh = _make_Dzh(Z);
     Eigen::VectorXf E = _make_E(Z);
 
-    float k;
-    if(E.norm() < 50)
-        k = 5e-3;
-    else
-        k = 5e-5;
+    _v_hat -= _k_v_hat*_Bdb*Dzh*E*dt;
+}
 
-    _v_hat -= k*_Bdb*Dzh*E*dt;
-    
-    std::cout << "Vhat: " << _v_hat.transpose() << std::endl;
+void DistanceFormation::update_mu_hat(Eigen::VectorXf X, float dt)
+{
+    Eigen::VectorXf Z = _Bb.transpose()*X;
+    Eigen::VectorXf E = _make_E(Z);
 
+    _mu_hat += _k_mu_hat*(E + _mu - _mu_hat)*dt;
+}
+
+Eigen::VectorXf DistanceFormation::get_v_hat()
+{
     return _v_hat;
 }
 
-void DistanceFormation::log_1st(float t, Eigen::VectorXf X)
+Eigen::VectorXf DistanceFormation::get_mu_hat()
 {
-    Eigen::VectorXf Z = _Bb.transpose()*X;
-    Eigen::MatrixXf Dzh = _make_Dzh(Z);
-    Eigen::VectorXf E = _make_E(Z);
-    Eigen::VectorXf Zh = _make_Zh(Z);
-    Eigen::VectorXf U = -_c_shape*_Bb*Dzh*E + _Avb*Zh + _v_hat;
+    return _mu_hat;
+}
 
+Eigen::VectorXf DistanceFormation::get_X()
+{
+    return _X;
+}
+
+Eigen::VectorXf DistanceFormation::get_Z()
+{
+    return _Z;
+}
+
+Eigen::VectorXf DistanceFormation::get_E()
+{
+    return _E;
+}
+
+Eigen::VectorXf DistanceFormation::get_V()
+{
+    return _V;
+}
+
+Eigen::VectorXf DistanceFormation::get_U()
+{
+    return _U;
+}
+
+void DistanceFormation::log(float t)
+{
     Eigen::Vector3f z1 = Eigen::Vector3f::Zero(3);
-    z1.segment(0, 2) = Z.segment(0*_m, 2);
+    z1.segment(0, 2) = _Z.segment(0*_m, 2);
     Eigen::Vector3f u2 = Eigen::Vector3f::Zero(3);
-    u2.segment(0, 2) = U.segment(1*_m, 2);
+    u2.segment(0, 2) = _U.segment(1*_m, 2);
     Eigen::Vector3f w2 = z1.cross(u2);
 
     Eigen::Vector3f z3 = Eigen::Vector3f::Zero(3);
-    z3.segment(0, 2) = Z.segment(2*_m, 2);
+    z3.segment(0, 2) = _Z.segment(2*_m, 2);
     Eigen::Vector3f u3 = Eigen::Vector3f::Zero(3);
-    u3.segment(0, 2) = U.segment(2*_m, 2);
+    u3.segment(0, 2) = _U.segment(2*_m, 2);
     Eigen::Vector3f w3 = z3.cross(u3);
 
     Eigen::Vector3f z4 = Eigen::Vector3f::Zero(3);
-    z4.segment(0, 2) = Z.segment(3*_m, 2);
+    z4.segment(0, 2) = _Z.segment(3*_m, 2);
     Eigen::Vector3f u4 = Eigen::Vector3f::Zero(3);
-    u4.segment(0, 2) = U.segment(3*_m, 2);
+    u4.segment(0, 2) = _U.segment(3*_m, 2);
     Eigen::Vector3f w4 = z4.cross(u4);
 
-    std::cout << "w: " << 2*w2.norm()*1e-4 << std::endl;
-
-   _log << t << " " << X.transpose() << " " << Z.transpose() << " " << 
-       E.transpose() << " " << _v_hat.transpose() << " " << 
-       U.transpose() << " " << w2.norm() << " " << 2*w3.norm() << " " 
-       << " " << w4.norm() << std::endl;
-}
-
-void DistanceFormation::log_2nd(float t, Eigen::VectorXf X, Eigen::VectorXf V)
-{
-    Eigen::VectorXf Z = _Bb.transpose()*X;
-    Eigen::MatrixXf Dzh = _make_Dzh(Z);
-    Eigen::VectorXf E = _make_E(Z);
-    Eigen::VectorXf Zh = _make_Zh(Z);
-    Eigen::VectorXf U = -_c_shape*_Bb*Dzh*E + _c_vel*_Avb*Zh + _Aab*Zh
-        - _c_vel*V;
-
-   _log << t << " " << X.transpose() << " " << Z.transpose() << " " <<
-       E.transpose() << " " << _v_hat.transpose() << " " << 
-       U.transpose() << " " << std::endl;
+   _log << t << " " << get_X().transpose() << " " << get_Z().transpose()
+       << " " << get_E().transpose() << " " << get_v_hat().transpose()
+       << " " << get_U().transpose() << " " << w2.norm()
+       << " " << 2*w3.norm() << " " << w4.norm()
+       << " " << get_V().transpose() << " " << get_mu_hat().transpose() 
+       << std::endl;
 }

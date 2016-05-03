@@ -36,6 +36,7 @@ class Quad_GNC: public GNC{
         float _alt_d;
         float _x_zero, _y_zero, _z_zero;
         Eigen::Matrix3f _ECEF_to_Nav;
+        Eigen::Matrix3f _get_Body_to_Nav();
 
         void _xyz_wrt_xyz_zero(float, float, float);
 
@@ -76,7 +77,7 @@ class Quad_GNC: public GNC{
         Eigen::VectorXf get_attitude();
         Eigen::VectorXf get_gps();
         Eigen::VectorXf get_acc();
-
+        
         void navigation_update();
         void set_yaw_d(float);
         void set_xyz_zero(float, float, float);

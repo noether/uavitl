@@ -8,6 +8,10 @@
 #include "quad_gnc.hh"
 #include "../sim.hh"
 
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 Quad_GNC::Quad_GNC():
     GNC(-1, NULL),
     _sen(NULL),
@@ -273,6 +277,24 @@ void Quad_GNC::navigation_update()
     _xyz_wrt_xyz_zero(_lat, _lon, _alt);
 }
 
+Eigen::Matrix3f Quad_GNC::_get_Body_to_Nav()
+{
+    Eigen::Matrix3f R;
+
+    float cthe = cosf(_pitch);
+    float sthe = sinf(_pitch);
+    float cphi = cosf(_roll);
+    float sphi = sinf(_roll);
+    float cpsi = cosf(_yaw);
+    float spsi = sinf(_yaw);
+
+    R << cthe*cpsi, cthe*spsi, -sthe,
+        -cphi*spsi + sphi*sthe*cpsi, cphi*cpsi + sphi*sthe*spsi, sphi*cthe,
+        sphi*spsi + cphi*sthe*cpsi, -sphi*cpsi + cphi*sthe*spsi, cphi*cthe;
+
+    return R.transpose();
+}
+
 void Quad_GNC::set_yaw_d(float yaw_d)
 {
     _yaw_d = yaw_d;
@@ -380,8 +402,8 @@ void Quad_GNC::control_xyz_ned_lya()
     float az_d = -_xi_g -_k_alt*ez -_k_vz*_vd;
 
     // Desired attitude and thrust
-    float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
-    float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
+    float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;
+    float the_d =  (ax_d*cosf(_yaw) + ay_d*sinf(_yaw))/az_d;
     float T_d = az_d*_m;
 
     control_att_lya(phi_d, the_d, _yaw_d, T_d);
@@ -404,10 +426,9 @@ void Quad_GNC::control_v_2D_alt_lya()
     float ay_d = _xi_CD*v_norm*_ve - _k_vxy*e_vy;
     float az_d = -_xi_g - _k_alt*e_alt - _k_vz*_vd;
 
-
     // Desired attitude and thrust
-    float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
-    float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
+    float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;
+    float the_d =  (ax_d*cosf(_yaw) + ay_d*sinf(_yaw))/az_d;
     float T_d = az_d*_m;
 
 
@@ -428,8 +449,8 @@ void Quad_GNC::control_a_2D_alt_lya()
 
 
     // Desired attitude and thrust
-    float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
-    float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
+    float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;
+    float the_d =  (ax_d*cosf(_yaw) + ay_d*sinf(_yaw))/az_d;
     float T_d = az_d*_m;
 
 
@@ -444,8 +465,8 @@ void Quad_GNC::control_a_ned()
     float az_d = _ad_d - 9.82;
 
     // Desired attitude and thrust
-    float phi_d = -(ay_d*cosf(_yaw) - ax_d*cosf(_yaw))/az_d;
-    float the_d =  (ax_d*cosf(_yaw) + ay_d*cosf(_yaw))/az_d;
+    float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;
+    float the_d =  (ax_d*cosf(_yaw) + ay_d*sinf(_yaw))/az_d;
     float T_d = az_d*_m;
 
     control_att_lya(phi_d, the_d, _yaw_d, T_d);
@@ -503,5 +524,5 @@ void Quad_GNC::log(float t)
     _log << t << " " << get_X().transpose() << " " << get_V().transpose() 
         << " " << get_attitude().transpose() << " " << get_gps().transpose() 
         << " " << get_xi_g() << " " << get_xi_CD()
-        << " " << get_acc() << std::endl;
+        << " " << (_get_Body_to_Nav() * get_acc()).transpose() << std::endl;
 }

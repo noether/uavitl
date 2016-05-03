@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
 
     Eigen::Matrix3f J;
     J << 7.5e-3,      0,      0,
-              0, 7.5e-3,      0,
-              0,      0, 1.3e-2;
+      0, 7.5e-3,      0,
+      0,      0, 1.3e-2;
     float m = 1;
     float l = 0.23;
     //float kt = 3.13e-5;
@@ -108,23 +108,29 @@ int main(int argc, char* argv[])
     // Distance-based
     int fcm = 2;
     int fcl = 1;
-    float c_shape = 1e-2;
+    float c_shape = 2e-2;
     float c_vel = 2e-2;
+    float k_v_hat = 5e-5;
+    float k_mu_hat = 1e-3;
     Eigen::VectorXf fcd(5);
     Eigen::VectorXf mu(5);
     Eigen::VectorXf tilde_mu(5);
     Eigen::MatrixXf B(4, 5);
-    B << 1,  0, -1,  0,  0,
-        -1,  1,  0, -1,  0,
-         0, -1,  1,  0, -1,
-         0,  0,  0,  1,  1;
+    B << 1,  0,  1,  0,  0,
+        -1,  1,  0,  1,  0,
+         0, -1, -1,  0,  1,
+         0,  0,  0, -1, -1;
 
     float a = 50;
-    float gamma = 0.034;
-    fcd << sqrt(2)*a, a, a, sqrt(2)*a, a;
-    mu << 0, 0, 0, -2*a*gamma*sqrt(2), 2*a*gamma;
-    tilde_mu << 0, a*gamma, 0, -a*gamma*sqrt(2), 0;
-    DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel);
+ //   float gamma = 0.034;
+ //   float vmu = 20;
+    mu << -0.4, 0.3, 0.1, -0.6, 0.7;
+    tilde_mu << 0, 0, 0, 0, 0;
+    fcd << a, sqrt(2)*a, a, a, a;
+  //  mu << -vmu, 0, 0, 0, vmu;
+ //   tilde_mu << -vmu, 0, 0, 0, vmu;
+    DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel, 
+            k_v_hat, k_mu_hat);
 
     // Distance-based only for 1-2
     Eigen::VectorXf fcdr(3);
@@ -132,18 +138,25 @@ int main(int argc, char* argv[])
     Eigen::VectorXf tilde_mur(3);
     Eigen::MatrixXf Br(3, 3);
     Br << 1,  0,  0,
-         -1,  0,  0,
-          0,  0,  0;
+       -1,  0,  0,
+       0,  0,  0;
 
     fcdr << 100, 0, 0;
     mur << 0, 0, 0;
     tilde_mur << 0, 0, 0;
-    DistanceFormation dfr(fcm, fcl, fcdr, mur, tilde_mur, Br, c_shape, c_vel);
+    DistanceFormation dfr(fcm, fcl, fcdr, mur, tilde_mur, Br, c_shape, c_vel,
+            k_v_hat, k_mu_hat);
 
     // Position-based only for 1-2
-    Eigen::VectorXf zd(6);
-    zd << 100, 0, 0, 0, 0, 0;
-    PositionFormation pfr(fcm, zd, Br, c_shape, c_vel);
+    Eigen::VectorXf zd(10);
+    Eigen::MatrixXf Bpr(4, 5);
+
+    Bpr << 1,  0,  0,  0,  0,
+         -1,  0,  0,  0,  0,
+          0,  0,  0,  0,  0,
+          0,  0,  0,  0,  0;
+    zd << 0, a, 0, 0, 0, 0, 0, 0, 0, 0;
+    PositionFormation pfr(fcm, zd, Bpr, 5*c_shape, c_vel);
 
     // Bearing-based
     Eigen::VectorXf zhd(6);
@@ -156,23 +169,24 @@ int main(int argc, char* argv[])
     for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
             it != quads_gnc.end(); ++it){
         (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
-        (*it)->set_yaw_d(M_PI/4);
-        (*it)->set_active_controller(V_2D_ALT);
-        (*it)->set_v_2D_alt(0, 0, -600);
+        (*it)->set_yaw_d(M_PI);
+        (*it)->set_active_controller(A_2D_ALT);
+        (*it)->set_a_2D_alt(0, 0, -600);
     }
 
     quads_gnc.at(0)->set_active_controller(V_2D_ALT);
-    quads_gnc.at(0)->set_v_2D_alt(0, -1, -600);
+    quads_gnc.at(0)->set_v_2D_alt(0, -7, -600);
 
+#if 0
     quads_gnc.at(0)->set_active_controller(XYZ);
     quads_gnc.at(0)->set_xyz(5, -3, -20);
+#endif
 
 
-    for(;;)
-    {
+    for(;;){
         clock_gettime(CLOCK_REALTIME, &ts);
         last_step_time = ts.tv_nsec;
-        
+
         for (std::vector<Flyingmachine>::iterator it = quads.begin();
                 it != quads.end(); ++it)
             it->update(time);
@@ -182,31 +196,33 @@ int main(int argc, char* argv[])
 #if 0
         Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
         Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
-        Eigen::VectorXf Us = df.get_u_vel(X);
-        Eigen::VectorXf V_hat = Eigen::VectorXf::Zero(num_quads*fcm);
-        if(time >= 15e9)
-            V_hat = df.get_v_hat(X, dt*1e-9);
+        Eigen::VectorXf Us = df.get_u_acc(X, V);
 
-        Eigen::VectorXf U = Us + V_hat;
-#endif
-       
-        int i = 0;
-        for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
-                it != quads_gnc.end(); ++it){
- //           if( (i > 0) && (time >= 15e9)){
- //               (*it)->set_v_2D_alt(U(i*2), U(i*2+1), -600);
- //           }
-            (*it)->log(time*1e-9);
-            i++;
+        Eigen::VectorXf U = Us;
+    
+        if(time >= 15e9)
+        {
+            df.update_mu_hat(X, dt*1e-9);
+            Eigen::VectorXf mu_hat = df.get_mu_hat();
+            std::cout << "mu_hat: " << mu_hat.transpose() << std::endl;
+
+            int i = 0;
+            for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
+                    it != quads_gnc.end(); ++it){
+                (*it)->set_a_2D_alt(U(i*2), U(i*2+1), -600);
+                (*it)->log(time*1e-9);
+                i++;
+            }
+
+            df.log(time*1e-9);
         }
 
- //       if(time >= 15e9)
- //           df.log_1st(time*1e-9, X);
+#endif
 
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);
-     //   std::cout << "Time for sleeping: "
-     //       << dt - (ts.tv_nsec - last_step_time) << std::endl;
+        //   std::cout << "Time for sleeping: "
+        //       << dt - (ts.tv_nsec - last_step_time) << std::endl;
         nanosleep(&tsleep, NULL);
     }
 

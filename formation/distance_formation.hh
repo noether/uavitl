@@ -31,9 +31,9 @@ class DistanceFormation
         Eigen::VectorXf _mu;
         Eigen::VectorXf _tilde_mu;
 
-        Eigen::VectorXf _v_hat;
+        Eigen::VectorXf _X, _Z, _E, _V, _U, _v_hat, _mu_hat;
 
-        float _c_shape, _c_vel;
+        float _c_shape, _c_vel, _k_v_hat, _k_mu_hat;
 
         void _make_S1_S2();
         void _make_Av_Aa();
@@ -47,17 +47,28 @@ class DistanceFormation
 
     public:
         DistanceFormation(int, int, Eigen::VectorXf, Eigen::VectorXf,
-                Eigen::VectorXf, Eigen::MatrixXf, float, float);
+                Eigen::VectorXf, Eigen::MatrixXf, float, float, float, float);
         DistanceFormation();
         ~DistanceFormation();
 
         void set_mus(Eigen::VectorXf, Eigen::VectorXf);
+        void set_c_shape(float);
+        void set_c_vel(float);
+        void set_k_v_hat(float);
         Eigen::VectorXf get_u_acc(Eigen::VectorXf, Eigen::VectorXf);
         Eigen::VectorXf get_u_vel(Eigen::VectorXf);
-        Eigen::VectorXf get_v_hat(Eigen::VectorXf, float);
+        void update_v_hat(Eigen::VectorXf, float);
+        void update_mu_hat(Eigen::VectorXf, float);
 
-        void log_1st(float, Eigen::VectorXf);
-        void log_2nd(float, Eigen::VectorXf, Eigen::VectorXf);
+        Eigen::VectorXf get_v_hat();
+        Eigen::VectorXf get_mu_hat();
+        Eigen::VectorXf get_X();
+        Eigen::VectorXf get_Z();
+        Eigen::VectorXf get_E();
+        Eigen::VectorXf get_V();
+        Eigen::VectorXf get_U();
+
+        void log(float);
 };
 
 #endif // DISTANCE_FORMATION_HH
