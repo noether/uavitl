@@ -4,13 +4,13 @@ import numpy as np
 
 sk = 50
 
-time1 = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = [0], skiprows = sk)
-X1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = (1, 2, 3), skiprows = sk)
-V1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = (4, 5, 6), skiprows = sk)
-Att1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = (7, 8, 9), skiprows = sk)
-Gps1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = (10, 11, 12), skiprows = sk)
-xi_g1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = [13], skiprows = sk)
-xi_CD1_h = np.loadtxt("./log/xyz_quad/log_gnc_1.txt", usecols = [14], skiprows = sk)
+time1 = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = [0], skiprows = sk)
+X1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = (1, 2, 3), skiprows = sk)
+V1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = (4, 5, 6), skiprows = sk)
+Att1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = (7, 8, 9), skiprows = sk)
+Gps1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = (10, 11, 12), skiprows = sk)
+xi_g1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = [13], skiprows = sk)
+xi_CD1_h = np.loadtxt("../log/xyz_quad/log_gnc_1.txt", usecols = [14], skiprows = sk)
 
 pl.rcParams.update({'font.size': 20})
 
