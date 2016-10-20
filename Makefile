@@ -34,15 +34,20 @@ OBJECTS_UAVITL = $(COMM_PATH)udp_client_server.o \
 				 $(FORMATION_PATH)distance_formation.o \
 				 $(FORMATION_PATH)position_formation.o \
 				 $(FORMATION_PATH)bearing_formation.o \
-				 uavitl.o
 
-all: uavitl
+OBJECTS_UAVITL_1QUAD = $(OBJECTS_UAVITL) uavitl_1quad.o
+OBJECTS_UAVITL_FORM = $(OBJECTS_UAVITL) uavitl_form.o
 
-uavitl: $(OBJECTS_UAVITL)
+all: uavitl_1quad uavitl_form
+
+uavitl_1quad: $(OBJECTS_UAVITL_1QUAD)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS_PATH) $(LDFLAGS)
+
+uavitl_form: $(OBJECTS_UAVITL_FORM)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LIBS_PATH) $(LDFLAGS)
 
 clean:
-	$(RM) *~ *.o *.swp uavitl \
+	$(RM) *~ *.o *.swp uavitl_form uavitl_1quad \
 		$(COMM_PATH)*~  $(COMM_PATH)*.o $(COMM_PATH)*.swp  \
 		$(XPLANE_PATH)*~  $(XPLANE_PATH)*.o $(XPLANE_PATH)*.swp \
 		$(ENVIRONMENT_PATH)*~  $(ENVIRONMENT_PATH)*.o $(ENVIRONMENT_PATH)*.swp \
