@@ -486,8 +486,6 @@ void Quad_GNC::step_estimator_xi_g(float dt)
     // Euler integration
     // Gravity estimator
     _xi_g = _xi_g + (_k_xi_g_v*_vd + _k_xi_g_e_alt*_e_alt)*dt;
-
-    std::cout << _xi_g << std::endl;
 }
 
 float Quad_GNC::get_xi_g(void)

@@ -10,7 +10,6 @@
 #include "./formation/position_formation.hh"
 #include "./formation/bearing_formation.hh"
 
-
 int main(int argc, char* argv[])
 {
     std::string cfg;
