@@ -351,6 +351,15 @@ void Quad_GNC::set_a_ned(float an_d, float ae_d, float ad_d)
 void Quad_GNC::control_att_lya(float phi_d, float the_d, float yaw_d,
         float T_d)
 {
+
+    // Saturation (safety)
+    if(phi_d < -10*M_PI/180 || phi_d > 10*M_PI/180)
+        phi_d = 10*M_PI/180*sgn(phi_d);
+
+    if(the_d < -10*M_PI/180 || the_d > 10*M_PI/180)
+        the_d = 10*M_PI/180*sgn(the_d);
+
+
     // Navigation data
     float Jxx = _J(0, 0);
     float Jyy = _J(1, 1);
@@ -477,6 +486,8 @@ void Quad_GNC::step_estimator_xi_g(float dt)
     // Euler integration
     // Gravity estimator
     _xi_g = _xi_g + (_k_xi_g_v*_vd + _k_xi_g_e_alt*_e_alt)*dt;
+
+    std::cout << _xi_g << std::endl;
 }
 
 float Quad_GNC::get_xi_g(void)

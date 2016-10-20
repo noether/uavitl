@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
     }
 
     quads_gnc.at(0)->set_active_controller(V_2D_ALT);
-    quads_gnc.at(0)->set_v_2D_alt(0, -7, -600);
+    quads_gnc.at(0)->set_v_2D_alt(0, 5, -600);
 
 #if 0
     quads_gnc.at(0)->set_active_controller(XYZ);
