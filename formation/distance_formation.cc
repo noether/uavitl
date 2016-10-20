@@ -304,8 +304,7 @@ void DistanceFormation::log(float t)
 {
    _log << t << " " << get_X().transpose() << " " << get_Z().transpose()
        << " " << get_E().transpose() << " " << get_v_hat().transpose()
-       << " " << get_U().transpose() << " " << w2.norm()
-       << " " << 2*w3.norm() << " " << w4.norm()
-       << " " << get_V().transpose() << " " << get_mu_hat().transpose() 
+       << " " << get_U().transpose() << " " << get_V().transpose() 
+       << " " << get_mu_hat().transpose() 
        << std::endl;
 }

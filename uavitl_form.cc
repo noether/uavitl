@@ -142,8 +142,8 @@ int main(int argc, char* argv[])
             it != quads_gnc.end(); ++it){
         (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
         (*it)->set_yaw_d(M_PI);
-        (*it)->set_active_controller(A_2D_ALT);
-        (*it)->set_a_2D_alt(0, 0, -600);
+        (*it)->set_active_controller(V_2D_ALT);
+        (*it)->set_v_2D_alt(0, 0, -600);
     }
 
     for(;;){
@@ -159,10 +159,10 @@ int main(int argc, char* argv[])
         if(time >= 15e9)
         {
             Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
-            Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
+         //   Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
 
-            Eigen::VectorXf Us = df.get_u_acc(X, V);
-            Eigen::VectorXf Uo = pfr.get_u_acc(X, V);
+            Eigen::VectorXf Us = df.get_u_vel(X);
+            Eigen::VectorXf Uo = pfr.get_u_vel(X);
 
             Eigen::VectorXf U = Us + Uo;
 
@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
             int i = 0;
             for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
                     it != quads_gnc.end(); ++it){
-                (*it)->set_a_2D_alt(U(i*2), U(i*2+1), -600);
+                (*it)->set_v_2D_alt(U(i*2), U(i*2+1), -600);
                 (*it)->log(time*1e-9);
                 i++;
             }
