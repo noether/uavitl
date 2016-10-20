@@ -2,7 +2,7 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 
-#include <math.h>
+#include <cmath>
 #include "distance_formation.hh"
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -189,7 +189,7 @@ Eigen::MatrixXf DistanceFormation::_make_Dzh(Eigen::VectorXf Z)
     for(i = 0; i < _edges; i++){
         Eigen::VectorXf Zi = Z.segment(i*_m, _m);
         Zi.normalize();
-        if(!isnan(Zi(0)))
+        if(!std::isnan(Zi(0)))
             Dzh.block(i*_m, i, _m, 1) = Zi.segment(0, _m);
     }
 
@@ -204,7 +204,7 @@ Eigen::VectorXf DistanceFormation::_make_Zh(Eigen::VectorXf Z)
     for(i = 0; i < _edges; i++){
         Eigen::VectorXf Zi = Z.segment(i*_m, _m);
         Zi.normalize();
-        if(!isnan(Zi(0)))
+        if(!std::isnan(Zi(0)))
             Zh.segment(i*_m, _m) = Zi.segment(0, _m);
     }
 
