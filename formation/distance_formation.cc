@@ -302,24 +302,6 @@ Eigen::VectorXf DistanceFormation::get_U()
 
 void DistanceFormation::log(float t)
 {
-    Eigen::Vector3f z1 = Eigen::Vector3f::Zero(3);
-    z1.segment(0, 2) = _Z.segment(0*_m, 2);
-    Eigen::Vector3f u2 = Eigen::Vector3f::Zero(3);
-    u2.segment(0, 2) = _U.segment(1*_m, 2);
-    Eigen::Vector3f w2 = z1.cross(u2);
-
-    Eigen::Vector3f z3 = Eigen::Vector3f::Zero(3);
-    z3.segment(0, 2) = _Z.segment(2*_m, 2);
-    Eigen::Vector3f u3 = Eigen::Vector3f::Zero(3);
-    u3.segment(0, 2) = _U.segment(2*_m, 2);
-    Eigen::Vector3f w3 = z3.cross(u3);
-
-    Eigen::Vector3f z4 = Eigen::Vector3f::Zero(3);
-    z4.segment(0, 2) = _Z.segment(3*_m, 2);
-    Eigen::Vector3f u4 = Eigen::Vector3f::Zero(3);
-    u4.segment(0, 2) = _U.segment(3*_m, 2);
-    Eigen::Vector3f w4 = z4.cross(u4);
-
    _log << t << " " << get_X().transpose() << " " << get_Z().transpose()
        << " " << get_E().transpose() << " " << get_v_hat().transpose()
        << " " << get_U().transpose() << " " << w2.norm()

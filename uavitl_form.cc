@@ -112,58 +112,30 @@ int main(int argc, char* argv[])
     float c_vel = 2e-2;
     float k_v_hat = 5e-5;
     float k_mu_hat = 1e-3;
-    Eigen::VectorXf fcd(5);
-    Eigen::VectorXf mu(5);
-    Eigen::VectorXf tilde_mu(5);
-    Eigen::MatrixXf B(4, 5);
-    B << 1,  0,  1,  0,  0,
-        -1,  1,  0,  1,  0,
-         0, -1, -1,  0,  1,
-         0,  0,  0, -1, -1;
+    Eigen::VectorXf fcd(3);
+    Eigen::VectorXf mu(3);
+    Eigen::VectorXf tilde_mu(3);
+    Eigen::MatrixXf B(3, 3);
+    B << 1,  0,  1,
+        -1,  1,  0,
+         0, -1, -1;
 
     float a = 50;
- //   float gamma = 0.034;
- //   float vmu = 20;
-    mu << -0.4, 0.3, 0.1, -0.6, 0.7;
-    tilde_mu << 0, 0, 0, 0, 0;
-    fcd << a, sqrt(2)*a, a, a, a;
-  //  mu << -vmu, 0, 0, 0, vmu;
- //   tilde_mu << -vmu, 0, 0, 0, vmu;
+    mu << 0, 0, 0;
+    tilde_mu << 0, 0, 0;
+    fcd << a, a, a;
     DistanceFormation df(fcm, fcl, fcd, mu, tilde_mu, B, c_shape, c_vel, 
             k_v_hat, k_mu_hat);
 
-    // Distance-based only for 1-2
-    Eigen::VectorXf fcdr(3);
-    Eigen::VectorXf mur(3);
-    Eigen::VectorXf tilde_mur(3);
-    Eigen::MatrixXf Br(3, 3);
-    Br << 1,  0,  0,
-       -1,  0,  0,
-       0,  0,  0;
-
-    fcdr << 100, 0, 0;
-    mur << 0, 0, 0;
-    tilde_mur << 0, 0, 0;
-    DistanceFormation dfr(fcm, fcl, fcdr, mur, tilde_mur, Br, c_shape, c_vel,
-            k_v_hat, k_mu_hat);
-
     // Position-based only for 1-2
-    Eigen::VectorXf zd(10);
-    Eigen::MatrixXf Bpr(4, 5);
+    Eigen::VectorXf zd(6);
+    Eigen::MatrixXf Bpr(3, 3);
 
-    Bpr << 1,  0,  0,  0,  0,
-         -1,  0,  0,  0,  0,
-          0,  0,  0,  0,  0,
-          0,  0,  0,  0,  0;
-    zd << 0, a, 0, 0, 0, 0, 0, 0, 0, 0;
+    Bpr << 1,  0,  0,
+          -1,  0,  0,
+           0,  0,  0;
+    zd << 0, a, 0, 0, 0, 0;
     PositionFormation pfr(fcm, zd, Bpr, 5*c_shape, c_vel);
-
-    // Bearing-based
-    Eigen::VectorXf zhd(6);
-    float c60 = cosf(60*M_PI/180);
-    float s60 = sinf(60*M_PI/180);
-    zhd << -1, 0, c60, s60, c60, -s60;
-    BearingFormation bf(fcm, zhd, B, 1e4*c_shape, c_vel);
 
     // Setting control
     for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
@@ -184,15 +156,17 @@ int main(int argc, char* argv[])
 
         time += dt;
 
-        Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
-        Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
-
-        Eigen::VectorXf Us = df.get_u_acc(X, V);
-
-        Eigen::VectorXf U = Us;
-    
         if(time >= 15e9)
         {
+            Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
+            Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
+
+            Eigen::VectorXf Us = df.get_u_acc(X, V);
+            Eigen::VectorXf Uo = pfr.get_u_acc(X, V);
+
+            Eigen::VectorXf U = Us + Uo;
+
+
             int i = 0;
             for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
                     it != quads_gnc.end(); ++it){
