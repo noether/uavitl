@@ -75,11 +75,11 @@ int main(int argc, char* argv[])
     float k_xi_g_e_alt = 1e-1;
     float k_xi_CD_e_v = 1e-3;
 
-    int num_quads = 1;
+    int num_quads = 3;
 
     std::string q_ip("127.0.0.1");
-    int q_udp_xplane_in[4] = {50000, 51000, 52000, 53000};
-    int q_udp_xplane_out[4] = {60001, 61001, 62001, 63001};
+    int q_udp_xplane_in[3] = {50000, 51000, 52000};
+    int q_udp_xplane_out[3] = {60001, 61001, 62001};
 
     std::vector<Flyingmachine> quads;
     std::vector<Quad_GNC*> quads_gnc;
@@ -174,15 +174,6 @@ int main(int argc, char* argv[])
         (*it)->set_a_2D_alt(0, 0, -600);
     }
 
-    quads_gnc.at(0)->set_active_controller(V_2D_ALT);
-    quads_gnc.at(0)->set_v_2D_alt(0, 5, -600);
-
-#if 0
-    quads_gnc.at(0)->set_active_controller(XYZ);
-    quads_gnc.at(0)->set_xyz(5, -3, -20);
-#endif
-
-
     for(;;){
         clock_gettime(CLOCK_REALTIME, &ts);
         last_step_time = ts.tv_nsec;
@@ -193,19 +184,15 @@ int main(int argc, char* argv[])
 
         time += dt;
 
-#if 0
         Eigen::VectorXf X = create_X_from_quads(&quads_gnc, fcm);
         Eigen::VectorXf V = create_V_from_quads(&quads_gnc, fcm);
+
         Eigen::VectorXf Us = df.get_u_acc(X, V);
 
         Eigen::VectorXf U = Us;
     
         if(time >= 15e9)
         {
-            df.update_mu_hat(X, dt*1e-9);
-            Eigen::VectorXf mu_hat = df.get_mu_hat();
-            std::cout << "mu_hat: " << mu_hat.transpose() << std::endl;
-
             int i = 0;
             for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
                     it != quads_gnc.end(); ++it){
@@ -217,12 +204,8 @@ int main(int argc, char* argv[])
             df.log(time*1e-9);
         }
 
-#endif
-
         clock_gettime(CLOCK_REALTIME, &ts);
         tsleep.tv_nsec = dt - (ts.tv_nsec - last_step_time);
-        //   std::cout << "Time for sleeping: "
-        //       << dt - (ts.tv_nsec - last_step_time) << std::endl;
         nanosleep(&tsleep, NULL);
     }
 
