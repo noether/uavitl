@@ -223,7 +223,7 @@ Eigen::VectorXf DistanceFormation::_make_E(Eigen::VectorXf Z)
         for(i = 0; i < _edges; i++)
             E(i) = pow(Z.segment(i*_m, _m).norm(), _l) - pow(_d(i), _l);
 
-
+    std::cout << "Error: " << E.norm() << std::endl;
     return E;
 }
 

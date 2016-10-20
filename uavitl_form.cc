@@ -108,10 +108,10 @@ int main(int argc, char* argv[])
     // Distance-based
     int fcm = 2;
     int fcl = 1;
-    float c_shape = 2e-2;
+    float c_shape = 2e-1;
     float c_vel = 2e-2;
-    float k_v_hat = 5e-5;
-    float k_mu_hat = 1e-3;
+    float k_v_hat = 0;
+    float k_mu_hat = 0;
     Eigen::VectorXf fcd(3);
     Eigen::VectorXf mu(3);
     Eigen::VectorXf tilde_mu(3);
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
         -1,  1,  0,
          0, -1, -1;
 
-    float a = 50;
+    float a = 150;
     mu << 0, 0, 0;
     tilde_mu << 0, 0, 0;
     fcd << a, a, a;
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
             Eigen::VectorXf Us = df.get_u_vel(X);
             Eigen::VectorXf Uo = pfr.get_u_vel(X);
 
-            Eigen::VectorXf U = Us + Uo;
+            Eigen::VectorXf U = Us;
 
 
             int i = 0;
