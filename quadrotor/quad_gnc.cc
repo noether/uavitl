@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#include <cmath>
 #include <string>
 #include "Eigen/Core"
 #include "Eigen/LU"
@@ -383,7 +384,12 @@ void Quad_GNC::control_att_lya(float phi_d, float the_d, float yaw_d,
     // XPlane needs of a normalization factor, inputs between 0 and 1
     // It depends on your gains !!
     Eigen::Array4f u = w_sq.array().sqrt() / 500;
-    
+
+    if(std::isnan(u(0)+u(1)+u(2)+u(3))){
+        u.setZero();
+        std::cout << "Control input contains NaN!" << std::endl;
+    }
+
     int i;
     for (i = 0; i < 4; i++){
         if (u(i) > 1)
