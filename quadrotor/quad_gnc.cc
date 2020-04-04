@@ -78,7 +78,7 @@ Quad_GNC::Quad_GNC(int id, Sim *sim, Quad_Sensors *sen):
   //  _w_to_Tlmn << -_kt,    -_kt,    -_kt,    -_kt,
   //                   0, -_l*_kt,       0,  _l*_kt,
   //              _l*_kt,       0, -_l*_kt,       0,
-  //                -_km,    -_km,    -_km,    -_km;
+  //                -_km,    _km,    -_km,    _km;
 
   //  _Tlmn_to_w = _w_to_Tlmn;
 

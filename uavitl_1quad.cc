@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
         (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
         (*it)->set_yaw_d(M_PI);
         (*it)->set_active_controller(V_2D_ALT);
-        (*it)->set_v_2D_alt(0, 5, -600);
+        (*it)->set_v_2D_alt(0, 0, -600);
     }
 
 
