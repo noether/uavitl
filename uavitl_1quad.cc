@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     float km = 7.5e-7;
     float kp = 4;
     float kq = 4;
-    float kr = 4;
+    float kr = 4e-2;
     float k_xy = 1e-1;
     float k_vxy = 1;
     float k_vz = 1;
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     for (std::vector<Quad_GNC*>::iterator it = quads_gnc.begin();
             it != quads_gnc.end(); ++it){
         (*it)->set_xyz_zero(0.824756, 0.198016, 576.5);
-        (*it)->set_yaw_d(M_PI);
+        (*it)->set_yaw_d(0);
         (*it)->set_active_controller(V_2D_ALT);
         (*it)->set_v_2D_alt(0, 0, -600);
     }

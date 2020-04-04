@@ -374,24 +374,30 @@ void Quad_GNC::control_att_lya(float phi_d, float the_d, float yaw_d,
     // Desired moments
     float l_d = -Jxx*(100*ephi + _kp*_p) - (Jyy-Jzz)*_q*_r;
     float m_d = -Jyy*(100*ethe + _kq*_q) - (Jzz-Jxx)*_r*_p;
-    float n_d = -Jzz*(10*epsi + _kr*_r);
+    float n_d = -Jzz*(epsi + _kr*_r);
 
     // Desired angular velocities for the motors
     Eigen::Vector4f Tlmn_d;
     Tlmn_d << T_d, l_d, m_d, n_d;
     Eigen::Vector4f w_sq = _Tlmn_to_w * Tlmn_d;
 
+    // Saturation in case w is negative for the square root afterward
+    for(int i = 0; i < 4; i++)
+            if(w_sq[i] < 0)
+                w_sq[i] = 0;
+
     // XPlane needs of a normalization factor, inputs between 0 and 1
     // It depends on your gains !!
     Eigen::Array4f u = w_sq.array().sqrt() / 500;
+
+
 
     if(std::isnan(u(0)+u(1)+u(2)+u(3))){
         u.setZero();
         std::cout << "Control input contains NaN!" << std::endl;
     }
 
-    int i;
-    for (i = 0; i < 4; i++){
+    for(int i = 0; i < 4; i++){
         if (u(i) > 1)
             u(i) = 1;
         else if (u(i) < 0)
