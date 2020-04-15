@@ -335,6 +335,13 @@ void Quad_GNC::set_v_2D_alt(float vn_d, float ve_d, float alt_d)
     _alt_d = alt_d;
 }
 
+void Quad_GNC::set_v_ned(float vn_d, float ve_d, float vd_d)
+{
+    _vn_d = vn_d;
+    _ve_d = ve_d;
+    _vd_d = vd_d;
+}
+
 void Quad_GNC::set_a_2D_alt(float an_d, float ae_d, float alt_d)
 {
     _an_d = an_d;
@@ -446,6 +453,32 @@ void Quad_GNC::control_v_2D_alt_lya()
     float ax_d = _xi_CD*v_norm*_vn - _k_vxy*e_vx;
     float ay_d = _xi_CD*v_norm*_ve - _k_vxy*e_vy;
     float az_d = -_xi_g - _k_alt*e_alt - _k_vz*_vd;
+
+    // Desired attitude and thrust
+    float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;
+    float the_d =  (ax_d*cosf(_yaw) + ay_d*sinf(_yaw))/az_d;
+    float T_d = az_d*_m;
+
+
+    control_att_lya(phi_d, the_d, _yaw_d, T_d);
+}
+
+void Quad_GNC::control_v_ned()
+{
+    // Control errors
+    float e_vd = -_vd + _vd_d;
+    float e_vx = _vn - _vn_d;
+    float e_vy = _ve - _ve_d;
+
+    _e_alt = 0; // TODO No gravity estimator here yet
+    _e_vx = e_vx;  // For the CD estimation
+    _e_vy = e_vy;  // For the CD estimation
+
+    // Desired accelerations
+    float v_norm = sqrt(_vn*_vn + _ve*_ve);
+    float ax_d = _xi_CD*v_norm*_vn - _k_vxy*e_vx;
+    float ay_d = _xi_CD*v_norm*_ve - _k_vxy*e_vy;
+    float az_d = -9.82 -_k_vz*e_vd; // Gravity hardcoded
 
     // Desired attitude and thrust
     float phi_d =  (ax_d*sinf(_yaw) - ay_d*cosf(_yaw))/az_d;

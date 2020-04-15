@@ -77,18 +77,20 @@ class Quad_GNC: public GNC{
         Eigen::VectorXf get_attitude();
         Eigen::VectorXf get_gps();
         Eigen::VectorXf get_acc();
-        
+
         void navigation_update();
         void set_yaw_d(float);
         void set_xyz_zero(float, float, float);
         void set_xyz(float, float, float);
         void set_v_2D_alt(float, float, float);
+        void set_v_ned(float, float, float);
         void set_a_2D_alt(float, float, float);
         void set_a_ned(float, float, float);
 
         void control_att_lya(float, float, float, float);
         void control_xyz_ned_lya();
         void control_v_2D_alt_lya();
+        void control_v_ned();
         void control_a_2D_alt_lya();
         void control_a_ned();
         void step_estimator_xi_g(float);
